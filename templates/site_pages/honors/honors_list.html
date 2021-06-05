@@ -1,0 +1,73 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+{% endblock %}
+{% block title %}|لیست تالار افتخارات{% endblock %}
+
+{% block content %}
+
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div class="container box_shadow center_content">
+
+                <div class="cat_list">
+                    {% for key,value in grades.items %}
+                        {% if  key|stringformat:'s' == selected_cat|stringformat:'s' %}
+                            <a href="{% url 'pages:honors_list' %}?cat={{ key }}" class="cat_item actives">{{ value }}</a>
+                        {% else %}
+                            <a href="{% url 'pages:honors_list' %}?cat={{ key }}" class="cat_item ">{{ value }}</a>
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+                <div class="container_header">
+                    <div class="container_title"><a href="">تالار افتخارات</a></div>
+                    <div class="search_box search_news">
+                    </div>
+                    <div class="clr"></div>
+                </div>
+
+                <div class="News_list">
+                    {% if honors_list %}
+                        {% for honors in honors_list %}
+                            <div class="News_item_box">
+                                <div class="News_item box-shadow">
+                                    <a href="{% url 'pages:honors_detail'  honors.id %}">
+
+                                        <div class="News_img">
+                                            <img src="{{ honors.image.url }}" width="310" height="174">
+
+                                            <div class="News_img_hover">
+                                                <span class="GalleryIcon" href=""></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="News_content honor_content">
+                                            <div class="News_content_title">نام و نام خانوداگی : {{ honors.full_name }} </div>
+                                            <div class="News_content_txt">
+                                                <span class="honor_grade">
+                                                    {% for key,value in grades.items %}
+                                                        {% if key == honors.grade %}
+                                                            {{ value }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+
+                    <div class="clr"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

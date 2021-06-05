@@ -1,0 +1,59 @@
+{% load static %}
+<div id="Header_resize">
+    <div id="Header">
+        {% if user.is_authenticated %}
+            <div id="Login_Register">
+                <a title="">{{ user.first_name }} عزیز خوش آمدید | </a>
+                {% if user.is_staff is True %}
+                    <a href="{% url 'panel:panel_profile' %}" target="_blank" title="مشاهده پنل ادمین"><i class="fa fa-user"></i></a>
+                {% else %}
+                    <a href="{% url 'account:dashboard' %}" target="_blank" title="مشاهده پروفایل"><i class="fa fa-user"></i></a>
+                {% endif %}
+
+                <a class="nav-link" title="خروج از حساب کاربری" href="javascript:{document.getElementById('logout').submit()}">
+                    <i class="fa fa-sign-out"></i></a>
+                <form action="{% url 'account:logout' %}" id="logout" method="post">
+                    {% csrf_token %}
+
+                </form>
+            </div>
+
+
+        {% else %}
+            <div id="Login_Register">
+                <a href="{% url 'account:register' %}" target="_blank">ورود اعضا | ثبت نام</a>
+            </div>
+        {% endif %}
+
+        <div id="Menu">
+            <div id="navigation">
+                <span class="responsive_menu_icon" onclick="open_menu(this)" data-open="0"><i class="fa fa-align-justify"></i></span>
+
+                <ul>
+                    <li class="dropnav"><a href="{% url 'pages:index' %}" class="hvr-underline">صفحه اصلی</a></li>
+                    <li class="dropnav"><a href="{% url 'competition:competition_list' %}" class="hvr-underline">مسابقات</a></li>
+                    <li class="dropnav"><a href="{% url 'competition:ranking_list' %}" class="hvr-underline">رنکینگ</a></li>
+                    <li class="dropnav"><a href="{% url 'news:news_list' %}" class="hvr-underline">اخبار</a></li>
+                    <li class="dropnav"><a href="{% url 'pages:honors_list' %}" class="hvr-underline">تالار افتخارات</a></li>
+                    <li class="dropnav"><a href="{% url 'competition:gallery_list' %}" class="hvr-underline">گالری</a></li>
+                    <li class="dropnav"><a href="{% url 'pages:about' %}">درباره ما</a></li>
+                    <li class="dropnav"><a href="{% url 'pages:contact' %}" class="hvr-underline">تماس با ما</a></li>
+                    <div class="clr"></div>
+                </ul>
+            </div>
+
+            <div id="Logo">
+                <a href="{% url 'pages:index' %}">
+                    {% if info.logo_img != '' %}
+                        <img src="{{ info.logo_img.url }}" width="150" alt="لوگوی فدراسیون جودو">
+                    {% else %}
+                        <img src="{% static 'images/Logo_1.jpg' %}" width="150" alt="لوگوی فدراسیون جودو">
+                    {% endif %}
+
+                </a>
+
+            </div>
+            <div class="clr"></div>
+        </div><!-- End Menu -->
+    </div>
+</div><!-- End Header_resize -->

@@ -1,0 +1,139 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}"/>
+
+{% endblock %}
+{% block title %}| افزودن رتبه بندی {% endblock %}
+
+{% block content %}
+  <div class="Panel_Box">
+          <form method="post" action="{% url 'panel:panel_competition_rank' cmpid  %}" class="ranking_form">
+              {% csrf_token %}
+            <div class="action_result"></div>
+
+            <div class="Panel_Box_title">
+              <span class="title"><a href="">افزودن رنکینگ </a></span>
+              <button href="" title="ذخیره" class="Panel_Edit_icon">
+                <i class="fa fa-floppy-o"></i>
+              </button>
+            </div>
+
+            <div class="Panel_item_show" style="min-height:300px">
+                {% if ranks_for_cmp %}
+                  {% for rank in ranks_for_cmp %}
+                    <div class="plus_box">
+                    <div class="item_builder">
+                      <span class="title">جایگاه</span>
+                      <input type="text"  disabled value="{{ rank.place }}">
+                      <div class="clr"></div>
+                    </div>
+
+                    <div class="item_builder">
+                      <span class="title">امتیاز</span>
+                      <input type="text"  disabled value="{{ rank.point }}">
+                      <div class="clr"></div>
+                    </div>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              <input type="hidden" name="ranking" class="ranking">
+              <div class="plus_box">
+                <i class="fa fa-plus-square add_ranking" onclick="add_Ranking(this)"></i>
+
+                <div class="item_builder">
+                  <span class="title">جایگاه</span>
+                  <input type="text" name="force" required>
+                  <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                  <span class="title">امتیاز</span>
+                  <input type="text" name="force" required  id="data-input_1">
+                  <div class="clr"></div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+{% endblock %}
+
+
+
+{% block extrastyle1 %}
+    <script type="text/javascript">
+
+     function add_Ranking (x)
+      {
+        item = '<div class="plus_box"><i class="fa fa-minus-square add_ranking" onclick="del_Ranking(this)"></i><div class="item_builder"><span class="title">جایگاه</span><input type="text" name="force" required><div class="clr"></div></div><div class="item_builder"><span class="title">امتیاز</span><input type="text" name="force" required  id="data-input_1"><div class="clr"></div></div></div>'
+
+        $(x).closest(".Panel_item_show").append(item)
+      }
+
+      function del_Ranking (x) {
+        $(x).closest(".plus_box").remove()
+      }
+
+        $(function()
+        {
+          $(".ranking_form").on("submit", function(event)
+          {
+             ranking = [];
+
+        $(".plus_box").each(function () {
+            if ($(this).find(".item_builder").first().find("input[type=text]").prop('disabled') == false && $(this).find(".item_builder").last().find("input[type=text]").prop('disabled')==false){
+
+                  ranking.push(
+                      {
+                        "place" : $(this).find(".item_builder").first().find("input[type=text]").val(),
+                        "point" : $(this).find(".item_builder").last().find("input[type=text]").val()
+                      })
+            }
+
+        });
+
+        $(".ranking").val(JSON.stringify(ranking));
+
+        var formData = new FormData($(this)[0]);
+        event.preventDefault();
+        var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        $(".action_result").hide();
+
+        $.ajax(
+        {
+            processData: false,
+            contentType: false,
+            url:  $(".ranking_form").attr("action"),
+            type: $(".ranking_form").attr("method"),
+              headers:{
+            "X-CSRFToken": csrftoken
+                    },
+            data: formData,
+
+            success: function(response)
+            {
+
+                if (response["code"] == 100)
+                {
+                    {#$('.action_result').empty().html('<div class="result_success">'+response["result"]+'</div>');#}
+                    window.location = response["url"]
+                }
+                else
+                {
+                    $('.action_result').text(response['error']);
+                    $(".action_result").show();
+
+                }
+            }
+
+
+
+
+
+  })
+
+          })
+        });
+
+    </script>
+{% endblock %}

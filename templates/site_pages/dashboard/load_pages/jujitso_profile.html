@@ -1,0 +1,39 @@
+<div class="user_profile_info">
+    <div class="user_profile_50">
+        <div class="user_input box_80">
+            <p>نام مربی</p>
+            <input type="text" value="{{ profile_jujitso.coach_name }}" name="coach_name" placeholder="نام مربی خود را وارد نمایید" required>
+        </div>
+
+        <div class="user_input box_80">
+            <p>نام باشگاه</p>
+            <input type="text" value="{{ profile_jujitso.club_name }}" name=" club_name" placeholder="نام باشگاه خود را وارد نمایید" required>
+        </div>
+
+        <div class="user_input box_80">
+            <p>سمت</p>
+
+            <select name="position" required>
+
+                {% for key,value in positions.items %}
+                    <option value={{ key }}
+                                    {% if key == profile_jujitso.position %}
+                                        selected
+                                    {% endif %}
+                    >{{ value }}</option>
+                {% endfor %}
+
+            </select>
+        </div>
+
+
+    </div>
+
+    <div class="clr"></div>
+</div>
+
+<div class="user_input">
+    <button class="button">
+        ویرایش اطلاعات
+    </button>
+</div>

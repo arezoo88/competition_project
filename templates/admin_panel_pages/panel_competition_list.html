@@ -1,0 +1,114 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+
+{% endblock %}
+{% block title %}| لیست مسابقات {% endblock %}
+
+{% block content %}
+    <div class="Panel_Box">
+
+        <div class="Panel_Box_title">
+            <form action="">
+                <div class="action_result"></div>
+
+                <span><a>لیست مسابقات</a></span>
+                <a onclick="check_period_weight()" title="تعریف خبر" class="Panel_Edit_icon">
+                    <i class="fa fa-plus-square"></i>
+                </a>
+
+                <a href="{% url 'panel:panel_competition_weight' %}" title="رده های وزنی" class="Panel_Edit_icon">
+                    <i class="fa fa-align-justify"></i>
+                </a>
+            </form>
+        </div>
+
+        <div class="Panel_item_List">
+            <table cellspacing="1">
+                <thead>
+                <tr>
+                    <th>شماره</th>
+                    <th>عنوان مسابقه</th>
+                    <th>تاریخ مسابقه</th>
+                    <th>ظرفیت</th>
+                    <th>تاریخ ایجاد</th>
+                    {#                  <th>رده سنی</th>#}
+                    {#                  <th>رده وزنی</th>#}
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% if competition_list %}
+                    {% for cmp in competition_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ cmp.title }}</td>
+                            <td><p>{{ cmp.competition_date }}</p></td>
+                            <td><p>{% if cmp.capacity == '' %}نامحدود{% else %}{{ cmp.capacity }}{% endif %}</p></td>
+                            <td><p>{{ cmp.create_date }}</p></td>
+                            <td>
+                                <label class="switch">
+                                    <input onchange="item_Enable(this,'{% url 'panel:panel_competition_enable' %}')" type="checkbox" value="{{ cmp.id }}"
+                                            {% if cmp.is_published == True %}
+                                           checked
+                                            {% else %}
+                                            {% endif %}
+                                    >
+                                    <span class="item_Enable"></span>
+                                    {% if cmp.is_published == True %}
+                                        <span class="tooltip">فعال</span>
+                                    {% else %}
+                                        <span class="tooltip">غیر فعال</span>
+
+                                    {% endif %}
+                                </label>
+                            </td>
+                            <td>
+                                <a href="{% url 'panel:panel_competition_edit' cmp.id %}" title="ویرایش"><i class="fa fa-pen" aria-hidden="true"></i></a>
+                                <a onclick="item_Delete({{ cmp.id }},'{% url 'panel:panel_competition_delete' %}')" title="حذف"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extrastyle1 %}
+
+    <script type="text/javascript">
+        $(".action_result").hide();
+
+        function check_period_weight() {
+            $(".action_result").hide();
+            event.preventDefault();
+            $.ajax(
+                {
+                    type: 'post',
+                    url: '{% url 'panel:check_len_weight_table' %}',
+                    headers: {
+                        Accept: "application/json"
+                    },
+                    success: function (response) {
+
+                        if (response["code"] == 100) {
+                            window.location = response["url"]
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        }
+
+
+    </script>
+{% endblock %}

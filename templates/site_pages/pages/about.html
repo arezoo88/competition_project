@@ -1,0 +1,40 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+{% endblock %}
+{% block title %}|درباره ما {% endblock %}
+
+{% block content %}
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div id="wrapper_74_Box">
+                <div class="wrapper_74 item_list">
+                    <div class="container box_shadow">
+                        <div class="container_header">
+                            <div class="container_title"><a href="">درباره فدراسیون جودو</a></div>
+                            <div class="search_box"></div>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="center_content justify">
+                            {% if about %}
+                                {{ about | safe }}
+                            {% else %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wrapper_26_Box">
+                <div class="wrapper_26 box-shadow item_list">
+                    <div class="side_bar"></div>
+                </div>
+            </div>
+
+            <div class="clr"></div>
+        </div>
+    </div>
+
+{% endblock %}

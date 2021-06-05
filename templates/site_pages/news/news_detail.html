@@ -1,0 +1,38 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+{% endblock %}
+{% block title %}|جزئیات خبر{% endblock %}
+{% block content %}
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div id="wrapper_74_Box">
+                <div class="wrapper_74 item_list">
+                    <div class="container box_shadow center_content">
+                        <div class="container_header">
+                            <div class="container_title"><a href="">{{ news_detail.title }}</a></div>
+                            <div class="search_box"></div>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="justify">
+                            {{ news_detail.description | safe }}
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div id="wrapper_26_Box">
+                <div class="wrapper_26 box-shadow item_list">
+                    <div class="side_bar"></div>
+                </div>
+            </div>
+
+            <div class="clr"></div>
+        </div>
+    </div>
+
+{% endblock %}

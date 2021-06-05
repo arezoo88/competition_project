@@ -1,0 +1,56 @@
+{% if users_list %}
+    {% for user in users_list %}
+
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.username }}</td>
+            <td><p>{{ user.birth_date }}</p></td>
+            <td>
+                {% if genders %}
+                    {% for key,value in genders.items %}
+                        {% if  user.gender == key %}
+                            {{ value }}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </td>
+            <td>
+                {% if user.interest == 0 %}
+                    جودو
+                {% elif user.interest == 1 %}
+                    دفاع شخصی
+                {% else %}
+                    جودو/دفاع شخصی
+                {% endif %}
+
+            </td>
+            <td>
+                <label class="switch">
+                    <input onchange="item_Enable(this,'{% url 'panel:panel_user_enable' %}')"
+                           type="checkbox" value="{{ user.id }}"
+                            {% if user.activate_status == True %}
+                           checked
+                            {% else %}
+                            {% endif %}
+                    >
+
+                    <span class="item_Enable"></span>
+                    {% if user.activate_status == True %}
+                        <span class="tooltip">فعال</span>
+                    {% else %}
+                        <span class="tooltip">غیر فعال</span>
+
+                    {% endif %}
+                </label>
+            </td>
+            <td>
+                <a href="{% url 'panel:panel_user_edit' user.id %}" title="ویرایش">
+                    <i class="fa fa-pen" aria-hidden="true"></i>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+{% endif %}
+

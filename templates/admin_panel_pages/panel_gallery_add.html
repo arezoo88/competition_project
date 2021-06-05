@@ -1,0 +1,105 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}| افزودن عکس {% endblock %}
+{% block content %}
+    <div class="Panel_Box">
+        <form method="post" action="{% url 'panel:panel_gallery_add' %}" class="gallery_form_add">
+            <div class="action_result"></div>
+
+            <div class="action_result">لطفا فیلدهای ضروری را پر کنید</div>
+            <div class="Panel_Box_title">
+                <span class="title"><a href="">افزودن تصویر</a></span>
+                <button title="ذخیره" class="Panel_Edit_icon">
+                    <i class="fa fa-floppy-o"></i>
+                </button>
+            </div>
+
+            <div class="Panel_item_show">
+                <div class="item_builder">
+                    <span class="title">عنوان تصویر</span>
+                    <input type="text" name="title" required>
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">تصویر کوچک</span>
+                    <input type="file" id="img" name="img_small" accept="image/*" required>
+
+                    <div class="item_help">
+                        <a title="سایز تصویر : 310 * 130"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                    </div>
+
+                    <div class="item_hide_box">
+                        <div class="item_hide small_Gallery">
+                            <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                            <img src="images/news_1.jpg" width="130" height="130">
+                        </div>
+                    </div>
+
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">تصویر بزرگ</span>
+                    <input type="file" id="img" name="img_big" accept="image/*" required>
+
+                    <div class="item_help">
+                        <a title="سایز تصویر : 725 * 370"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                    </div>
+
+                    <div class="item_hide_box">
+                        <div class="item_hide big_Gallery">
+                            <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                            <img src="images/news_1.jpg" width="725" height="370">
+                        </div>
+                    </div>
+
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">توضیحات تصویر</span>
+                    <textarea name="text" cols="50" rows="10" required></textarea>
+                    <div class="clr"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+
+
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        $(".gallery_form_add").on("submit", function (event) {
+            var formData = new FormData($(this)[0]);
+            $(".action_result").hide();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+                        if (response["code"] == 100) {
+                            window.location = response["url"]
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        });
+    </script>
+{% endblock %}

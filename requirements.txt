@@ -1,0 +1,9 @@
+Django==2.2
+django-ckeditor==5.9.0
+django-js-asset==1.2.2
+django-mathfilters==1.0.0
+Pillow==7.1.2
+psycopg2==2.8.5
+python-magic==0.4.18
+pytz==2020.1
+sqlparse==0.3.1

@@ -1,0 +1,191 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block content %}
+
+
+    <div class="Panel_Box">
+        <div class="Panel_Box_title">
+            <span>اطلاعات شخص حقیقی</span>
+            <a href="{% url 'panel:panel_profile_change_pass' %}" title="تغییر رمز عبور" class="Panel_Edit_icon Password"></a>
+            <a href="{% url 'panel:panel_profile_edit' %}" title="ویرایش اطلاعات" class="Panel_Edit_icon Edit"></a>
+        </div>
+
+        <div>
+            <div class="Panel_UserProfile">
+                <div>
+                    {% if profile_info.personal_image %}
+                        <img src="{{ profile_info.personal_image.url }}" width="150" height="150">
+                    {% else %}
+                        <img src="{% static 'panel/images/Panel-Profile.jpg' %}">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="Panel_UserInfo">
+                <table>
+                    <tr>
+                        <td>نام : {{ profile_info.first_name }}</td>
+                        <td>نام خانوادگی : {{ profile_info.last_name }}</td>
+                        <td>کد ملی : {{ profile_info.username }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>جنسیت :
+                            {% if  profile_info.gender == 0 %}
+                                آقا
+                            {% else %}
+                                خانم
+                            {% endif %}
+
+                        </td>
+                        <td>تاریخ تولد :{{ profile_info.birth_date }} </td>
+                        <td>موبایل : {{ profile_info.phone }}</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>کد پستی : {{ profile_info.postal_code }}</td>
+                        <td colspan="2">ایمیل : {{ profile_info.email }}</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="3">آدرس : {{ profile_info.address }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="clr"></div>
+        </div>
+    </div>
+
+    <div class="Panel_Box">
+        <div class="Panel_Box_title">
+            <span><a href="{% url 'panel:panel_news_list' %}">لیست اخبار</a></span>
+        </div>
+        <div class="item_hide_box item_hide_box_remove">
+            <div class="item_hide item_hide border_radius" style="height:100px"></div>
+        </div>
+        <div class="Panel_item_List">
+            <table cellspacing="1">
+                <thead>
+                <tr>
+                    <th>شماره</th>
+                    <th>عنوان خبر</th>
+                    <th>نام دسته</th>
+                    <th>تاریخ ایجاد</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                {% if news_list %}
+                    {% for news in news_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ news.title }}</td>
+                            {% if news.category %}
+                                <td>{{ news.category.title }}</td>
+
+                            {% else %}
+                                <td>تعریف نشده</td>
+
+                            {% endif %}
+                            <td><p>{{ news.create_date }}</p></td>
+                            <td>
+                                <label class="switch">
+                                    <input onchange="item_Enable(this,'{% url 'panel:panel_news_enable' %}')" type="checkbox" value="{{ news.id }}"
+                                            {% if news.is_published == True %}
+                                           checked
+                                            {% else %}
+                                            {% endif %}
+                                    >
+                                    <span class="item_Enable"></span>
+                                    {% if news.is_published == True %}
+                                        <span class="tooltip">فعال</span>
+                                    {% else %}
+                                        <span class="tooltip">غیر فعال</span>
+
+                                    {% endif %}
+                                </label>
+                            </td>
+                            <td>
+                                <a href="{% url 'panel:panel_news_edit' news.id %}" title="ویرایش"><i class="fa fa-pen" aria-hidden="true"></i></a>
+                                <a onclick="item_Delete({{ news.id }},'{% url 'panel:panel_news_delete' %}')" title="حذف"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="Panel_Box">
+        <div class="Panel_Box_title">
+            <span><a href="{% url 'panel:panel_competition_list' %}">لیست مسابقات</a></span>
+        </div>
+
+        <div class="Panel_item_List">
+            <table cellspacing="1">
+                <thead>
+                <tr>
+                    <th>شماره</th>
+                    <th>عنوان مسابقه</th>
+                    <th>تاریخ ایجاد</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% if competition_list %}
+                    {% for cmp in competition_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ cmp.title }}</td>
+                            <td><p>{{ cmp.create_date }}</p></td>
+                            <td>
+                                <label class="switch">
+                                    <input onchange="item_Enable(this,'{% url 'panel:panel_competition_enable' %}')" type="checkbox" value="{{ cmp.id }}"
+                                            {% if cmp.is_published == True %}
+                                           checked
+                                            {% else %}
+                                            {% endif %}
+                                    >
+                                    <span class="item_Enable"></span>
+                                    {% if cmp.is_published == True %}
+                                        <span class="tooltip">فعال</span>
+                                    {% else %}
+                                        <span class="tooltip">غیر فعال</span>
+
+                                    {% endif %}
+                                </label>
+                            </td>
+                            <td>
+                                <a href="{% url 'panel:panel_competition_edit' cmp.id %}" title="ویرایش"><i class="fa fa-pen" aria-hidden="true"></i></a>
+                                <a onclick="item_Delete({{ cmp.id }},'{% url 'panel:panel_competition_delete' %}')" title="حذف"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block extrastyle1 %}
+    <script>
+        function item_hide_close(x) {
+            $(".item_hide_box").fadeOut()
+        }
+    </script>
+{% endblock %}

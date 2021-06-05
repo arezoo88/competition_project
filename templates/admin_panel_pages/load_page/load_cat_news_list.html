@@ -1,0 +1,6 @@
+{% if cats_list %}
+    {% for cat in cats_list %}
+        <span>{{ cat.title }}<i class="fa fa-times" onclick="del_cat({{cat.id}})"  data-catid="{{ cat.id }}"></i></span>
+    {% endfor %}
+    <div class="clr"></div>
+{% endif %}

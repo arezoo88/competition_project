@@ -1,0 +1,418 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/kama_datepicker.css' %}"/>
+{% endblock %}
+{% block title %}| ویرایش کاربر {% endblock %}
+
+{% block content %}
+
+    <div class="Panel_Box">
+        <form method="post" action="{% url 'panel:panel_user_edit' profile_info.id %}" class="complete_form_user"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="action_result"></div>
+            <div class="Panel_Box_title">
+                <span class="title"><a href="">مشخصات کاربر</a></span>
+                <button href="" title="ذخیره" class="Panel_Edit_icon">
+                    <i class="fa fa-floppy-o"></i>
+                </button>
+            </div>
+
+            <div class="Panel_item_show">
+                <div class="item_builder">
+                    <span class="title">نام</span>
+                    <input type="text" name="first_name" placeholder="نام خود را وارد نمایید"
+                           value="{{ profile_info.first_name }}" required>
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">نام خانوادگی</span>
+                    <input type="text" name="last_name" placeholder="نام خانوادگی خود را وارد نمایید"
+                           value="{{ profile_info.last_name }}" required>
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">شماره موبایل</span>
+                    <input type="text" name="mobile" placeholder="شماره موبایل خود را وارد نمایید"
+                           value="{{ profile_info.phone }}" required>
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">تاریخ تولد</span>
+                    <input type="text" name="birth_date" placeholder="تاریخ تولد خود را وارد نمایید"
+                           value="{{ profile_info.birth_date }}" required id="data-input">
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">کد ملی</span>
+                    <input type="text" name="national_code" placeholder="غیر قابل ویرایش"
+                           value="{{ profile_info.username }}" required readonly>
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">عکس کاربر</span>
+                    <input type="file" id="img" name="person_img" accept="image/*" width="200" height="200">
+
+                    <div class="item_help">
+                        <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye"
+                                                                                  aria-hidden="true"></i></a>
+                        <a title="سایز عکس : 200 * 200"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                    </div>
+
+                    <div class="item_hide_box">
+                        <div class="item_hide">
+                            <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i>
+                            </div>
+                            {% if   profile_info.personal_image %}
+                                <img src="{{ profile_info.personal_image.url }}" width="310" height="174">
+
+                            {% else %}
+                                <img src="" width="310" height="174">
+
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="clr"></div>
+                </div>
+
+
+                <div class="item_builder">
+                    <span class="title">جنسیت</span>
+                    <select name="gender" required>
+
+                        {% for key,value in genders.items %}
+                            <option value={{ key }}
+                                            {% if key == profile_info.gender %}
+                                                selected
+                                            {% endif %}
+                            >{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="clr"></div>
+                </div>
+
+
+                <div class="item_builder">
+                    <span class="title">عکس کارت ملی</span>
+                    <input type="file" id="img" name="national_img" accept="image/*">
+
+                    <div class="item_help">
+                        <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye"
+                                                                                  aria-hidden="true"></i></a>
+                        <a title="سایز عکس : 200 * 200"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                    </div>
+
+                    <div class="item_hide_box">
+                        <div class="item_hide">
+                            <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i>
+                            </div>
+                            {% if   profile_info.national_document_image %}
+                                <img src="{{ profile_info.national_document_image.url }}" width="310" height="174">
+
+                            {% else %}
+                                <img src="" width="310" height="174">
+
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="clr"></div>
+                </div>
+                {##}
+
+
+                <div class="item_builder">
+                    <span class="title">آدرس</span>
+                    <input type="text" name="address" placeholder="آدرس محل سکونت خود را وارد نمایید"
+                           value="{{ profile_info.address }}">
+                    <div class="clr"></div>
+                </div>
+                {% if profile_judo_info and profile_jujitso_info %}
+                    <input type="hidden" value="2" name="interest">
+
+                    <div class="Field_item">
+                        <div class="Field_item_title">فرم جودو</div>
+                        <div class="item_builder">
+                            <span class="title">نام مربی</span>
+                            <input type="text" name="coach_name_judo" placeholder="نام خود را وارد نمایید" value="{{ profile_judo_info.coach_name }}" required>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="item_builder">
+                            <span class="title">نام باشگاه</span>
+                            <input type="text" name="club_name_judo" placeholder="نام خود را وارد نمایید" value="{{ profile_judo_info.club_name }}" required>
+                            <div class="clr"></div>
+                        </div>
+
+
+                        <div class="item_builder">
+                            <span class="title">سمت</span>
+                            <select name="position_judo" required>
+                                {% for key,value in positions.items %}
+                                    <option value={{ key }}
+                                                    {% if key == profile_judo_info.position %}
+                                                        selected
+                                                    {% endif %}
+                                    >{{ value }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="clr"></div>
+                        </div>
+                        <div class="item_builder">
+                            <span class="title">کمربند</span>
+                            <input type="file" id="img" name="qform_document_judo" accept="image/*">
+
+                            <div class="item_help">
+                                <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye"
+                                                                                          aria-hidden="true"></i></a>
+                                <a title="سایز عکس : 174 * 310"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                            </div>
+
+                            <div class="item_hide_box">
+                                <div class="item_hide">
+                                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i>
+                                    </div>
+
+                                    {% if  profile_judo_info.qform_document %}
+                                        <img src="{{ profile_judo_info.qform_document.url }}" width="310" height="174">
+
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+                            <div class="clr"></div>
+                        </div>
+                    </div>
+                    <div class="Field_item">
+                        <div class="Field_item_title">فرم دفاع شخصی</div>
+
+                        <div class="item_builder">
+                            <span class="title">نام مربی</span>
+                            <input type="text" name="coach_name_jujitso" placeholder="نام خود را وارد نمایید" value="{{ profile_jujitso_info.coach_name }}" required>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="item_builder">
+                            <span class="title">نام باشگاه</span>
+                            <input type="text" name="club_name_jujitso" placeholder="نام خود را وارد نمایید" value="{{ profile_jujitso_info.club_name }}" required>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="item_builder">
+                            <span class="title">سمت</span>
+                            <select name="position_jujitso" required>
+                                {% for key,value in positions.items %}
+                                    <option value={{ key }}
+                                                    {% if key == profile_jujitso_info.position %}
+                                                        selected
+                                                    {% endif %}
+                                    >{{ value }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="item_builder">
+                            <span class="title">کمربند</span>
+                            <input type="file" id="img" name="qform_document_jujitso" accept="image/*">
+
+                            <div class="item_help">
+                                <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye"
+                                                                                          aria-hidden="true"></i></a>
+                                <a title="سایز عکس : 174 * 310"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                            </div>
+
+                            <div class="item_hide_box">
+                                <div class="item_hide">
+                                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i>
+                                    </div>
+
+                                    {% if   profile_jujitso_info.qform_document %}
+                                        <img src="{{ profile_jujitso_info.qform_document.url }}" width="310" height="174">
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+                            <div class="clr"></div>
+                        </div>
+                    </div>
+
+                {% elif profile_judo_info %}
+                    <div class="Field_item">
+                        <div class="Field_item_title">فرم جودو</div>
+                        <input type="hidden" value="0" name="interest">
+                        <div class="item_builder">
+                            <span class="title">نام مربی</span>
+                            <input type="text" name="coach_name_judo" placeholder="نام خود را وارد نمایید" value="{{ profile_judo_info.coach_name }}" required>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="item_builder">
+                            <span class="title">نام باشگاه</span>
+                            <input type="text" name="club_name_judo" placeholder="نام خود را وارد نمایید" value="{{ profile_judo_info.club_name }}" required>
+                            <div class="clr"></div>
+                        </div>
+
+
+                        <div class="item_builder">
+                            <span class="title">سمت</span>
+                            <select name="position_judo" required>
+                                {% for key,value in positions.items %}
+                                    <option value={{ key }}
+                                                    {% if key == profile_judo_info.position %}
+                                                        selected
+                                                    {% endif %}
+                                    >{{ value }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="clr"></div>
+                        </div>
+                        <div class="item_builder">
+                            <span class="title">کمربند</span>
+                            <input type="file" id="img" name="qform_document_judo" accept="image/*">
+
+                            <div class="item_help">
+                                <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye"
+                                                                                          aria-hidden="true"></i></a>
+                                <a title="سایز عکس : 174 * 310"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                            </div>
+
+                            <div class="item_hide_box">
+                                <div class="item_hide">
+                                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i>
+                                    </div>
+
+                                    {% if  profile_judo_info.qform_document %}
+                                        <img src="{{ profile_judo_info.qform_document.url }}" width="310" height="174">
+
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+                            <div class="clr"></div>
+                        </div>
+                    </div>
+                {% elif profile_jujitso_info %}
+                    <div class="Field_item">
+                        <div class="Field_item_title">فرم دفاع شخصی</div>
+                        <input type="hidden" value="1" name="interest">
+
+                        <div class="item_builder">
+                            <span class="title">نام مربی</span>
+                            <input type="text" name="coach_name_jujitso" placeholder="نام خود را وارد نمایید" value="{{ profile_jujitso_info.coach_name }}" required>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="item_builder">
+                            <span class="title">نام باشگاه</span>
+                            <input type="text" name="club_name_jujitso" placeholder="نام خود را وارد نمایید" value="{{ profile_jujitso_info.club_name }}" required>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="item_builder">
+                            <span class="title">سمت</span>
+                            <select name="position_jujitso" required>
+                                {% for key,value in positions.items %}
+                                    <option value={{ key }}
+                                                    {% if key == profile_jujitso_info.position %}
+                                                        selected
+                                                    {% endif %}
+                                    >{{ value }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="item_builder">
+                            <span class="title">کمربند</span>
+                            <input type="file" id="img" name="qform_document_jujitso" accept="image/*">
+
+                            <div class="item_help">
+                                <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye"
+                                                                                          aria-hidden="true"></i></a>
+                                <a title="سایز عکس : 174 * 310"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                            </div>
+
+                            <div class="item_hide_box">
+                                <div class="item_hide">
+                                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i>
+                                    </div>
+
+                                    {% if   profile_jujitso_info.qform_document %}
+                                        <img src="{{ profile_jujitso_info.qform_document.url }}" width="310" height="174">
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+                            <div class="clr"></div>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+        </form>
+    </div>
+
+
+{% endblock %}
+
+
+
+{% block extrastyle1 %}
+    <script src="{% static 'js/kama_datepicker.js' %}"></script>
+    <script type="text/javascript">
+        kamaDatepicker('data-input', {
+            nextButtonIcon: "{% static 'panel/images/timeir_next.png' %}"
+            , previousButtonIcon: "{% static 'panel/images/timeir_prev.png' %}"
+            , forceFarsiDigits: true
+            , markToday: true
+            , markHolidays: true
+            , highlightSelectedDay: true
+            , sync: true
+        });
+
+        $(".complete_form_user").on("submit", function (event) {
+            var formData = new FormData($(this)[0]);
+            $(".action_result").hide();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+                        if (response["code"] == 100) {
+                            window.location = response["url"]
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        });
+    </script>
+{% endblock %}

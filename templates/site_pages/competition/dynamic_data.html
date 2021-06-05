@@ -1,0 +1,23 @@
+<div class="new_dynamic_data">
+  {% if result %}
+      {% for cmp in result %}
+      <a  class="item_list_list">
+          <div class="item_list_img"><img src="{{ cmp.poster_image.url }}" width="40" height="40">
+          </div><div class="item_list_info"><div class="item_list_name">{{ cmp.title }}</div>
+          <div class="item_list_Flag">
+              <span>مهلت ثبت نام : از تاریخ {{ cmp.register_from }} تا تاریخ {{ cmp.register_to }}</span>
+              <span>جنسیت : {% if  cmp.gender == 0 %}آقا{% else %}خانم{% endif %}</span>
+              <span>رده وزنی : {{ cmp.weight.title }}</span>
+          </div>
+          <div style="position: absolute;left: 0;bottom: 10px;width: 100%">
+
+            <div class="competition_btn" onclick="register({{ cmp.id }},{{ cmp.cmp_id }},{{ cmp.subtitle }},{{ cmp.gender }})">
+                {% if  cmp.subtitle == 0 %}نونهالان{% elif cmp.subtitle == 1 %}نوجوانان{% elif cmp.subtitle == 2 %}جوانان{% elif cmp.subtitle == 3 %}بزرگسالان{% endif %}
+            </div>
+          </div>
+           </div>
+          <div class="clr"></div>
+      </a>
+      {% endfor %}
+  {% endif %}
+</div>

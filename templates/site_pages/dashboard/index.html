@@ -1,0 +1,612 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/kama_datepicker.css' %}">
+{% endblock %}
+{% block title %}|پنل کاربری {% endblock %}
+{% block content %}
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div id="wrapper_26_Box">
+                <div class="wrapper_26 box-shadow item_list profile_information">
+                    <div class="profile">
+                        <div class="profile_img">
+                            <div class="upload_img_box">
+                                <input type="file" id="img" name="person_img" accept="image/*" class="upload_img" onchange="image_change(this)" multiple>
+                                <i class="fa fa-pen upload_img_icon"></i>
+                            </div>
+                            {% if profile_info.personal_image %}
+                                <img src="{{ profile_info.personal_image.url }}" width="150" height="150">
+                            {% else %}
+                                <img src="{% static 'images/User_Icon.png' %}" width="150" height="150">
+
+                            {% endif %}
+                        </div>
+
+                        <div class="profile_name">{{ profile_info.first_name }} {{ profile_info.last_name }}</div>
+                        <div class="profile_tools">
+                            <div class="tools">
+                                {% if  profile_info.activate_status == True %}
+                                    <i class="fa fa-circle active"></i>
+                                    <span>وضعیت : فعال</span>
+                                {% else %}
+
+                                    <i class="fa fa-circle wating"></i>
+                                    <span>وضعیت : غیر فعال</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="tools" onclick="item_list_filter(event, '1')">
+                                <i class="fa fa-user"></i>
+                                <span> ویرایش اطلاعات</span>
+                            </div>
+
+                            <div class="tools" onclick="item_list_filter(event, '2')">
+                                <i class="fa fa-lock"></i>
+                                <span>تغییر رمز عبور</span>
+                            </div>
+                            <form action="{% url 'account:logout' %}" id="logout" method="post">
+                                {% csrf_token %}
+
+                            </form>
+                            <div class="tools">
+
+                                <a href="javascript:{document.getElementById('logout').submit()}">
+                                    <i class="fa fa-sign-out">
+                                    </i>
+                                    <span>خروج</span>
+
+                                </a>
+                            </div>
+
+                            <div class="clr"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wrapper_26_new">
+                    <div class="Tab_Section">
+                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, '1')" id="defaultOpen">ویرایش اطلاعات</a>
+                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, '2')">تغییر رمز عبور</a>
+                        {% if profile_info.interest == 0 %}
+                            <a class="Tab_Title profile_tab" onclick="item_list_filter(event, '3')">فرم جودو</a>
+                        {% elif profile_info.interest == 1 %}
+                            <a class="Tab_Title profile_tab" onclick="item_list_filter(event, '4')">فرم دفاع شخصی</a>
+                        {% else %}
+                            <a class="Tab_Title profile_tab" onclick="item_list_filter(event, '3')">فرم جودو</a>
+                            <a class="Tab_Title profile_tab" onclick="item_list_filter(event, '4')">فرم دفاع شخصی</a>
+                        {% endif %}
+
+                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, '5')">مسابقه های من</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wrapper_74_Box">
+                <div class="wrapper_74 item_list">
+
+                    <!-- <div class="user_status box-shadow">
+                        وضعیت : فعال
+                    </div> -->
+
+                    <div class="container box-shadow">
+                        <div class="container_content center_content">
+                            <div id="1" class="Tab_Content Tab_Content_profile" data-open="0">
+                                <div class="container_title_profile"><a>ویرایش اطلاعات</a></div>
+
+                                <form action="{% url 'account:dashboard' %}" method="POST" class="complete_form_info" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="user_profile_info">
+
+                                        <div class="user_profile_50">
+                                            <div class="user_input box_80">
+                                                <p>نام</p>
+                                                <input type="text" name="first_name" value="{{ profile_info.first_name }}" placeholder="نام خود را وارد نمایید" required>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>نام خانوادگی</p>
+                                                <input type="text" name="last_name" placeholder="نام خانوادگی خود را وارد نمایید" value="{{ profile_info.last_name }}" required>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>شماره موبایل</p>
+                                                <input type="text" name="mobile" value="{{ profile_info.phone }}" required>
+                                            </div>
+
+
+                                            <div class="user_input box_80">
+                                                <p>کد ملی</p>
+                                                <input type="text" name="national_code" value="{{ user.username }}" readonly required>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>تاریخ تولد</p>
+                                                <input type="text" name="birth_date" value="{{ profile_info.birth_date }}" placeholder="تاریخ تولد خود را وارد نمایید" required id="data-input">
+                                            </div>
+                                        </div>
+
+                                        <div class="user_profile_50">
+                                            <div class="user_input box_80">
+                                                <p>جنسیت</p>
+                                                <select name="gender" required>
+
+                                                    {% for key,value in genders.items %}
+                                                        <option value={{ key }}
+                                                                        {% if key == profile_info.gender %}
+                                                                            selected
+                                                                        {% endif %}
+                                                        >{{ value }}</option>
+                                                    {% endfor %}
+
+                                                </select>
+                                            </div>
+                                            <div class="user_input box_80">
+                                                <p>آدرس</p>
+                                                <input type="text" name="address" placeholder="آدرس محل سکونت خود را وارد نمایید" value="{{ profile_info.address }}
+">
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>عکس کارت ملی</p><i class="fa fa-eye abs_icon" onclick="show_item_hide(this)"></i>
+                                                <input type="file" id="img" name="national_img" accept="image/*"
+
+                                                        {% if profile_info.national_document_image != '' %}
+                                                        {% else %}
+                                                       required
+                                                        {% endif %}
+                                                >
+
+                                                <div class="profile_item_hide_box">
+                                                    <div class="profile_item_hide">
+                                                        <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                                                        <div class="item_hide_img">
+                                                            {% if profile_info.national_document_image %}
+                                                                <img src="{{ profile_info.national_document_image.url }}" width="400" height="250">
+                                                            {% else %}
+                                                                <img src="" width="400" height="250">
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>گرایش</p>
+                                                <select name="field" required>
+                                                    <option value="0" {% if profile_info.interest == 0 %}selected{% endif %}>جودو</option>
+                                                    <option value="1" {% if profile_info.interest == 1 %}selected{% endif %}>دفاع شخصی</option>
+                                                    <option value="2" {% if profile_info.interest == 2 %}selected{% endif %}>هردو</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="clr"></div>
+                                    </div>
+
+                                    <div class="user_input">
+                                        <button class="button">
+                                            ویرایش اطلاعات
+                                        </button>
+                                    </div>
+                                </form>
+                                <div class="Loading"><img src="{% static 'images/Loader.gif' %}" alt="loading"/></div>
+                                <div class="result_form"></div>
+                            </div>
+
+                            <div id="2" class="Tab_Content Tab_Content_profile" data-open="0">
+                                <div class="container_title_profile"><a>تغییر رمز عبور</a></div>
+
+                                <form action="{% url 'account:dashboard' %}" method="POST" class="complete_form_info">
+                                    {% csrf_token %}
+                                    <div class="user_profile_info">
+                                        <div class="user_profile_50">
+                                            <div class="user_input box_80">
+                                                <p>رمز عبور قدیم</p>
+                                                <input type="password" name="old_pass" placeholder="رمز عبور قدیم را وارد کنید" required>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>رمز عبور جدید</p>
+                                                <input type="password" name="new_pass" placeholder="رمز عبور جدید را وارد کنید" required>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>تکرار رمز عبور جدید</p>
+                                                <input type="password" name="rep_pass" placeholder="رمز عبور جدید را وارد کنید" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="clr"></div>
+                                    </div>
+
+                                    <div class="user_input">
+                                        <button class="button">
+                                            تغییر رمز عبور
+                                        </button>
+                                    </div>
+                                </form>
+                                <div class="Loading"><img src="{% static 'images/Loader.gif' %}" alt="loading"/></div>
+                                <div class="result_form"></div>
+                            </div>
+                            <div id="3" class="Tab_Content Tab_Content_profile" data-open="0">
+                                <div class="container_title_profile"><a>فرم جودو</a></div>
+
+                                <form method="POST" class="complete_form_info" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="user_profile_info">
+                                        <div class="user_profile_50">
+                                            <div class="user_input box_80">
+                                                <p>نام مربی</p>
+                                                <input type="text" value="{{ profile_judo.coach_name }}" name="coach_name" placeholder="نام مربی خود را وارد نمایید" required>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>نام باشگاه</p>
+                                                <input type="text" value="{{ profile_judo.club_name }}" name="club_name" placeholder="نام باشگاه خود را وارد نمایید" required>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>سمت</p>
+                                                <select name="position" required>
+
+                                                    {% for key,value in positions.items %}
+                                                        <option value={{ key }}
+                                                                        {% if key == profile_judo.position %}
+                                                                            selected
+                                                                        {% endif %}
+                                                        >{{ value }}</option>
+                                                    {% endfor %}
+
+                                                </select></div>
+
+                                            <div class="user_input box_80">
+                                                <p>فرم q7</p><i class="fa fa-eye abs_icon" onclick="show_item_hide(this)"></i>
+                                                <input type="file" id="img" name="qform_document" accept="image/*">
+
+                                                <div class="profile_item_hide_box">
+                                                    <div class="profile_item_hide">
+                                                        <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                                                        <div class="item_hide_img">
+                                                            {% if profile_judo.qform_document %}
+                                                                <img src="{{ profile_judo.qform_document.url }}" width="400" height="250">
+                                                            {% else %}
+                                                                <img src="" alt="">
+                                                            {% endif %}
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="clr"></div>
+                                    </div>
+
+                                    <div class="user_input">
+                                        <button class="button">
+                                            ویرایش اطلاعات
+                                        </button>
+                                    </div>
+                                </form>
+                                <div class="Loading"><img src="{% static 'images/Loader.gif' %}" alt="loading"/></div>
+                                <div class="result_form"></div>
+                            </div>
+
+                            <div id="4" class="Tab_Content Tab_Content_profile" data-open="0">
+                                <div class="container_title_profile"><a>فرم دفاع شخصی</a></div>
+
+                                <form method="POST" class="complete_form_info" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="user_profile_info">
+                                        <div class="user_profile_50">
+                                            <div class="user_input box_80">
+                                                <p>نام مربی</p>
+                                                <input type="text" value="{{ profile_jujitso.coach_name }}" name="coach_name" placeholder="نام مربی خود را وارد نمایید" required>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>نام باشگاه</p>
+                                                <input type="text" value="{{ profile_jujitso.club_name }}" name=" club_name" placeholder="نام باشگاه خود را وارد نمایید" required>
+                                            </div>
+
+                                            <div class="user_input box_80">
+                                                <p>سمت</p>
+
+                                                <select name="position" required>
+
+                                                    {% for key,value in positions.items %}
+                                                        <option value={{ key }}
+                                                                        {% if key == profile_jujitso.position %}
+                                                                            selected
+                                                                        {% endif %}
+                                                        >{{ value }}</option>
+                                                    {% endfor %}
+
+                                                </select>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="clr"></div>
+                                    </div>
+
+                                    <div class="user_input">
+                                        <button class="button">
+                                            ویرایش اطلاعات
+                                        </button>
+                                    </div>
+                                </form>
+                                <div class="Loading"><img src="{% static 'images/Loader.gif' %}" alt="loading"/></div>
+
+                                <div class="result_form"></div>
+                            </div>
+
+                            <div id="5" class="Tab_Content Tab_Content_profile" data-open="0">
+                                <div class="container_title_profile"><a>مسابقه های من</a></div>
+
+                                <table class="competition_table">
+                                    <tr>
+                                        <th>ردیف</th>
+                                        <th>نام مسابقه</th>
+                                        <th>تاریخ مسابقه</th>
+                                        <th>رده سنی</th>
+                                        <th>رده وزنی</th>
+                                        <th>وضعیت</th>
+                                        <th>توضیحات</th>
+                                        <th>کارت مسابقه</th>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="empty">-</th>
+                                        <th class="empty">-</th>
+                                        <th class="empty">-</th>
+                                        <th class="empty">-</th>
+                                        <th class="empty">-</th>
+                                        <th class="empty">-</th>
+                                        <th class="empty">-</th>
+                                        <th class="empty">-</th>
+                                    </tr>
+                                    {% if cmps %}
+                                        {% for cmp in cmps %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ cmp.cid.title }}</td>
+                                                <td>{{ cmp.cid.competition_date }}</td>
+                                                <td>
+                                                    {% if ages_period %}
+                                                        {% for key,value in ages_period.items %}
+                                                            {% if cmp.cid.subtitle == key %}
+                                                                {{ value }}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+
+                                                </td>
+                                                <td>
+                                                    <span class="user_weight_profile">
+                                                        {% if weights %}
+                                                            {% for weight in weights %}
+                                                                {% if weight == cmp.cid.weight %}
+                                                                    {{ weight.title }}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {% if cmp.status == True %}
+                                                        فعال
+                                                    {% else %}
+                                                        {% if cmp.reject_status == True %}
+                                                            ریجکت شد.
+                                                        {% else %}
+                                                            منتظر تائید
+                                                        {% endif %}
+
+                                                    {% endif %}
+
+                                                </td>
+                                                <td>
+                                                    {% if cmp.reject_cause == '' %}
+                                                        -
+                                                    {% else %}
+                                                        {{ cmp.reject_cause }}
+                                                    {% endif %}
+                                                </td>
+                                                <td><i class="fa fa-eye"></i></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p>مسابقه ای ثبت نشده است.</p>
+                                    {% endif %}
+
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clr"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrastyle1 %}
+    <script src="{% static 'js/kama_datepicker.js' %}"></script>
+    <script type="text/javascript">
+
+
+        function item_list_filter(evt, id) {
+            var i, TabContent, TabSectionTitle;
+
+            TabContent = document.getElementsByClassName("Tab_Content");
+            TabSectionTitle = document.getElementsByClassName("Tab_Title");
+
+            for (i = 0; i < TabContent.length; i++) {
+                TabContent[i].style.display = "none";
+            }
+            for (i = 0; i < TabSectionTitle.length; i++) {
+
+                TabSectionTitle[i].className = TabSectionTitle[i].className.replace("actives", "");
+
+                if (i == parseInt(id - 1))
+                    TabSectionTitle[i].className += " actives"
+            }
+
+            document.getElementById(id).style.display = "block";
+        }
+
+        document.getElementById("defaultOpen").click();
+
+
+        kamaDatepicker('data-input', {
+            nextButtonIcon: "images/timeir_next.png"
+            , previousButtonIcon: "images/timeir_prev.png"
+            , forceFarsiDigits: true
+            , markToday: true
+            , markHolidays: true
+            , highlightSelectedDay: true
+            , sync: true
+        });
+
+        function show_item_hide(x) {
+            $(x).closest(".user_input").find(".profile_item_hide_box").fadeIn()
+        }
+
+        function item_hide_close(x) {
+            $(x).closest(".user_input").find(".profile_item_hide_box").fadeOut()
+        }
+
+        $(".complete_form_info").on("submit", function (event) {
+            event.preventDefault();
+            $(".result_form").empty();
+            var formData = new FormData($(this)[0]);
+            formData.append("tab_id", $(this).parents().attr('id'));
+            $(this).find(".Loading").fadeIn();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            row = $(this);
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+                        $(".Loading").fadeOut();
+                        if (row.parents().attr('id') == 3 || row.parents().attr('id') == 4 || row.parents().attr('id') == 1) {
+                            if (typeof (response) == 'string') {
+                                row.empty().html(response);
+                                if (row.parents().attr('id') == 1) {
+                                    first_name = $(response).find('.user_profile_50:nth-child(1) .user_input:nth-child(1) input').val();
+                                    last_name = $(response).find('.user_profile_50:nth-child(1) .user_input:nth-child(2) input').val();
+                                    $('#Login_Register').find('a').first().text(first_name + ' عزیز خوش آمدید |');
+                                    $('.profile_name').empty().html(first_name + " " + last_name);
+                                    var form_field = $(response).find('.user_profile_50:nth-child(2)').find('[name=field]').val();
+                                    if (form_field == "0") {
+                                        $('.Tab_Section').empty().html('<div class="Tab_Section">\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'1\')" id="defaultOpen">ویرایش اطلاعات</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'2\')">تغییر رمز عبور</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'3\')">فرم جودو</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'5\')">مسابقه های من</a>\n' +
+                                            '                    </div>')
+                                    } else if (form_field == "1") {
+                                        $('.Tab_Section').empty().html('<div class="Tab_Section">\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'1\')" id="defaultOpen">ویرایش اطلاعات</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'2\')">تغییر رمز عبور</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'4\')">فرم دفاع شخصی</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'5\')">مسابقه های من</a>\n' +
+                                            '                    </div>')
+                                    } else {
+                                        $('.Tab_Section').empty().html('<div class="Tab_Section">\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'1\')" id="defaultOpen">ویرایش اطلاعات</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'2\')">تغییر رمز عبور</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'3\')">فرم جودو</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'4\')">فرم دفاع شخصی</a>\n' +
+                                            '                        <a class="Tab_Title profile_tab" onclick="item_list_filter(event, \'5\')">مسابقه های من</a>\n' +
+                                            '                    </div>')
+
+                                    }
+                                    $('.Tab_Title').click(function () {
+                                        $(".result_form").empty();
+                                    });
+
+                                }
+
+
+                                $('.result_form').empty().html('<div class="result_success">' + 'اطلاعات با موفقیت ثبت شد.' + '</div>');
+                            } else {
+                                row.parents().find('.result_form').empty().html('<div class="result_error">' + response["error"] + '</div>');
+
+                            }
+                        } else {
+                            if (response['code'] == 1) {
+                                window.location = response["url"]
+
+                            } else {
+                                row.parents().find('.result_form').empty().html('<div class="result_error">' + response["error"] + '</div>');
+
+                            }
+
+
+                        }
+
+                    }
+                })
+
+
+        });
+
+        $(document).ready(function () {
+            $('.Tab_Title').click(function () {
+                $(".result_form").empty();
+            });
+
+        });
+
+        function image_change(a) {
+            $(".result_form").empty();
+
+            var formData = new FormData();
+            formData.append("tab_id", "0");
+            formData.append('person_img', $('input[name="person_img"]')[0].files[0]);
+
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+            $.ajax({
+                url: "{% url 'account:dashboard' %}",
+                type: 'POST',
+                headers: {
+                    "X-CSRFToken": csrftoken
+
+                },
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (response) {
+                    if (response['error']) {
+                        $('.result_form').empty().html('<div class="result_error">' + response["error"] + '</div>')
+                    } else {
+                        $('.profile_img').empty().html(response);
+
+                    }
+
+
+                }
+            })
+
+        }
+
+    </script>
+{% endblock %}

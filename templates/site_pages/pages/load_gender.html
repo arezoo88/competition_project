@@ -1,0 +1,14 @@
+{% for user_rank in users_ranks_in_cmp %}
+    <a href="" class="item_list_list">
+<div class="item_list_img"><img src="{{ user_rank.personal_image }}" width="40" height="40"></div>
+<div class="item_list_info">
+    <div class="item_list_name">{{ user_rank.firstname }} {{ user_rank.lastname }}</div>
+{#                                        <div class="item_list_Flag">#}
+{#                                            <img src="images/Ranking_Flag.jpg" width="20" height="15"> ایران#}
+{#                                        </div>#}
+</div>
+<div class="item_list_Category">{{ user_rank.sum }}</div>
+
+<div class="clr"></div>
+</a>
+{% endfor %}

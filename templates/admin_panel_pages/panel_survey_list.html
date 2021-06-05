@@ -1,0 +1,77 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}| لیست نظرسنجی{% endblock %}
+{% block content %}
+    <div class="Panel_Box">
+        <div class="Panel_Box_title">
+            <span><a href="">لیست نظرسنجی</a></span>
+            <a href="{% url 'panel:panel_survey_add' %}" title="تعریف نظرسنجی" class="Panel_Edit_icon">
+                <i class="fa fa-plus-square"></i>
+            </a>
+        </div>
+
+        <div class="item_hide_box item_hide_box_remove">
+            <div class="item_hide item_hide border_radius" style="height:100px"></div>
+        </div>
+
+        <div class="Panel_item_List">
+            <table cellspacing="1">
+                <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>عنوان نظرسنجی</th>
+                    <th>تاریخ ایجاد</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% if questions %}
+                    {% for question in questions %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ question.title }}</td>
+                            <td><p>{{ question.create_date }}</p></td>
+                            <td>
+                                <label class="switch">
+                                    <input onchange="item_Enable(this,'{% url 'panel:panel_survey_enable' %}')" type="checkbox" value="{{ question.id }}"
+                                            {% if question.is_published == True %}
+                                           checked
+                                            {% else %}
+                                            {% endif %}
+                                    >
+                                    <span class="item_Enable"></span>
+                                    {% if question.is_published == True %}
+                                        <span class="tooltip">فعال</span>
+                                    {% else %}
+                                        <span class="tooltip">غیر فعال</span>
+
+                                    {% endif %}
+                                </label>
+                            </td>
+                            <td>
+                                <a href="{% url 'panel:panel_survey_edit' question.id %}" title="ویرایش">
+                                    <i class="fa fa-pen" aria-hidden="true"></i>
+                                </a>
+                                <a onclick="item_Delete({{ question.id }},'{% url 'panel:panel_survey_delete' %}')" title="حذف"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        function item_hide_close(x) {
+            $(".item_hide_box").fadeOut()
+        }
+    </script>
+{% endblock %}
+

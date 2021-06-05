@@ -1,0 +1,350 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}| لیست اخبار{% endblock %}
+{% block content %}
+    <div class="Panel_Box">
+        <div class="search_box_title">
+            <span>دسته بندی</span>
+            <button><i class="fa fa-chevron-up slideToggle" data-slide="0"></i></button>
+        </div>
+
+        <div class="slide" style="display:none">
+            <form class="Category_Form" action="{% url 'panel:add_category_news' %}" method="post">
+                <div>
+                    افزودن دسته : <input name="cat_name" type="text" class="new_cat"> <span class="cat_save" onclick="new_cat(this)">ذخیره</span>
+                </div>
+            </form>
+
+            <div class="cat_list">
+                {% if cats_list %}
+                    {% for cat in cats_list %}
+                        <span>{{ cat.title }} <i class="fa fa-times" onclick="del_cat({{ cat.id }})" data-catid="{{ cat.id }}"></i>
+                        </span>
+
+
+                    {% endfor %}
+                {% endif %}
+                <div class="clr"></div>
+            </div>
+        </div>
+    </div>
+    <div class="Panel_Box">
+
+
+        <div class="Panel_Box_title">
+            <span><a href="">لیست اخبار</a></span>
+            <a href="{% url 'panel:panel_news_add' %}" title="تعریف خبر" class="Panel_Edit_icon">
+                <i class="fa fa-plus-square"></i>
+            </a>
+            <a title="دسته بندی خبر" class="Panel_Edit_icon" onclick="open_cat(this)">
+                <i class="fa fa-folder-open"></i>
+                <span class="msg_box"> خبرهای مورد نظر خود را انتخاب نمایید</span>
+            </a>
+        </div>
+
+        <div class="item_hide_box item_hide_box_cat">
+            <div class="item_hide border_radius" style="height:120px !important">
+                <form action="{% url 'panel:select_cat_news' %}" method="post" class="select_cat_news">
+                    <div class="item_hide_title">انتخاب دسته</div>
+                    <input name="ids" class="ids" type="hidden" value="">
+                    <select class="select_cat">
+                        <option value="0">دسته مورد نظر را انتخاب نمایید</option>
+
+                        {% if cats_list %}
+                            {% for cat in cats_list %}
+                                <option value="{{ cat.id }}">{{ cat.title }}</option>
+                            {% endfor %}
+                        {% endif %}
+
+                    </select>
+
+                    <div style="margin-top:20px">
+                        <button class="item_hide_btn">ثبت</button>
+                        <span onclick="item_hide_close(this)" class="item_hide_btn">بستن</span>
+                        <div class="" clr=""></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="item_hide_box item_hide_box_remove">
+            <div class="item_hide item_hide border_radius" style="height:100px"></div>
+        </div>
+
+        <div class="Panel_item_List">
+            <table cellspacing="1">
+                <thead>
+                <tr>
+                    <th>
+                        <input id="Select_All" type="checkbox" style="display:none">
+                        <label for="Select_All"></label>
+                    </th>
+                    <th>شماره</th>
+                    <th>عنوان خبر</th>
+                    <th>نام دسته</th>
+                    <th>تاریخ ایجاد</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% if news_list %}
+                    {% for news in news_list %}
+                        <tr class="news_">
+                            <td style="display: none" class="id_news">{{ news.id }}</td>
+
+                            <td>
+                                <input name="chk" id="check_{{ forloop.counter }}" type="checkbox" class="Select_Check" style="display:none" value="{{ news.id }}">
+                                <label for="check_{{ forloop.counter }}"></label>
+                            </td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ news.title }}</td>
+                            {% if news.category %}
+                                <td>{{ news.category.title }}</td>
+
+                            {% else %}
+                                <td>تعریف نشده</td>
+
+                            {% endif %}
+                            <td><p>{{ news.create_date }}</p></td>
+                            <td>
+                                <label class="switch">
+                                    <input onchange="item_Enable(this,'{% url 'panel:panel_news_enable' %}')" type="checkbox" value="{{ news.id }}"
+                                            {% if news.is_published == True %}
+                                           checked
+                                            {% else %}
+                                            {% endif %}
+                                    >
+                                    <span class="item_Enable"></span>
+                                    {% if news.is_published == True %}
+                                        <span class="tooltip">فعال</span>
+                                    {% else %}
+                                        <span class="tooltip">غیر فعال</span>
+
+                                    {% endif %}
+                                </label>
+                            </td>
+                            <td>
+                                <a href="{% url 'panel:panel_news_edit' news.id %}" title="ویرایش"><i class="fa fa-pen" aria-hidden="true"></i></a>
+                                <a onclick="item_Delete({{ news.id }},'{% url 'panel:panel_news_delete' %}')" title="حذف"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $.ajax(
+                {
+                    url: "{% url 'panel:category_selected' %}",
+                    type: 'post',
+                    headers: {
+                        Accept: "application/json",
+
+                    },
+                    success: function (response) {
+                        $(".cat_list").empty().html(response)
+                    }
+
+                });
+        });
+        var select_all = document.getElementById("Select_All");
+        var checkboxes = document.getElementsByClassName("Select_Check");
+
+        select_all.addEventListener("change", function (e) {
+            for (i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = select_all.checked;
+            }
+        });
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].addEventListener('change', function (e) {
+                if (this.checked == false) {
+                    select_all.checked = false;
+                }
+                if (document.querySelectorAll('.Select_Check:checked').length == checkboxes.length) {
+                    select_all.checked = true;
+                }
+            });
+        }
+
+        function open_cat(x) {
+            $.ajax(
+                {
+                    url: "{% url 'panel:list_category' %}",
+                    type: 'post',
+                    headers: {
+                        Accept: "application/json",
+
+                    },
+                    success: function (response) {
+                        $(".select_cat").empty().html(response)
+                    }
+                });
+
+
+            id = [];
+
+            $(x).closest(".Panel_Box").find(".Panel_item_List").find(".Select_Check").each(function () {
+
+                if ($(this).prop("checked") == true)
+                    id.push($(this).val())
+
+                if (id.length != 0) {
+                    $(".msg_box").hide()
+                    $(".ids").val(JSON.stringify(id))
+                    $(".item_hide_box_cat").fadeIn()
+                } else {
+                    $(".msg_box").show()
+                }
+            })
+        }
+
+        function item_hide_close(x) {
+            $(".item_hide_box").fadeOut()
+        }
+
+        function new_cat(x) {
+            $.ajax(
+                {
+                    url: $(".Category_Form").attr("action"),
+                    type: $(".Category_Form").attr("method"),
+                    headers: {
+                        Accept: "application/json",
+
+                    },
+                    data: {
+                        val: $('.Category_Form').find('.new_cat').val()
+                    },
+
+
+                    success: function (response) {
+                        $(".cat_list").empty().html(response)
+                    }
+                });
+        }
+
+
+        function del_cat(catid) {
+            $.ajax(
+                {
+                    url: "{% url 'panel:delete_category' %}",
+                    type: "post",
+                    data: {
+                        cat_id: catid
+                    },
+                    headers: {
+                        Accept: "application/json",
+
+                    },
+
+                    success: function (response) {
+                        $(".cat_list").empty().html(response)
+
+                    }
+                });
+            $.ajax({
+                url: "{% url 'panel:delete_cat_news' %}",
+                type: "post",
+                data: {
+                    cat_id: catid
+                },
+                headers: {
+                    Accept: "application/json",
+
+                },
+
+                success: function (response) {
+                    if (response['code'] == 100) {
+
+                        for (var i = 0, l = response['list_change_news_cat'].length; i < l; i++) {
+                            $('.news_').each(function () {
+                                if ($(this).find('.id_news').text() == response['list_change_news_cat'][i]) {
+                                    $(this).find('td:nth-child(5)').text('تعریف نشده');
+
+                                }
+                            })
+
+
+                        }
+
+
+                        {#if ($(this).find('td:nth-child(4)').text() == key)#}
+
+                    } else if (response['code'] == 103) {
+
+                    }
+                }
+
+            })
+        }
+
+
+        $(".slideToggle").click(function (x) {
+            $(".slide").slideToggle("speed");
+
+            if ($(".slideToggle").attr("data-slide") == 0) {
+                $(".slideToggle").addClass("active")
+                $(".slideToggle").attr("data-slide", "1")
+            } else if ($(".slideToggle").attr("data-slide") == 1) {
+                $(".slideToggle").removeClass("active")
+                $(".slideToggle").attr("data-slide", "0")
+            }
+        });
+
+
+        $('.select_cat_news').on('submit', function () {
+            event.preventDefault();
+
+            var cat_selected = $(this).find('.select_cat').val();
+            newsid_list = [];
+
+            $('.news_').each(function () {
+                if ($(this).find('input').prop("checked") == true) {
+                    var news_id = $(this).find('input').val();
+                    newsid_list.push(news_id)
+                }
+            });
+            $.ajax(
+                {
+
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        Accept: "application/json",
+
+                    },
+                    data: {
+                        'newsid_list[]': newsid_list,
+                        'cat_id': cat_selected
+                    },
+                    success: function (response) {
+                        if (response['code'] == 100) {
+                            window.location = response["url"]
+                        } else {
+                            window.location = response["url"]
+
+                        }
+                    }
+
+                });
+        });
+
+    </script>
+{% endblock %}
+
+
+
+

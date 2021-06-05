@@ -1,0 +1,92 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}| لیست تالار افتخخارات{% endblock %}
+{% block content %}
+    <div class="Panel_Box">
+        <div class="Panel_Box_title">
+            <span><a href="">لیست تالار افتخارات</a></span>
+            <a href="{% url 'panel:panel_honors_add' %}" title="تعریف " class="Panel_Edit_icon">
+                <i class="fa fa-plus-square"></i>
+            </a>
+        </div>
+        <div class="item_hide_box item_hide_box_remove">
+            <div class="item_hide item_hide border_radius" style="height:100px"></div>
+        </div>
+        <div class="Panel_item_List">
+            <table cellspacing="1">
+                <thead>
+                <tr>
+                    <th>شماره</th>
+                    <th>نام و نام خانوادگی</th>
+                    <th>عکس</th>
+                    <th>درجه</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% if honors_list %}
+                    {% for honors in honors_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ honors.full_name }}</td>
+                             <td>
+                                <div class="img_box_list"><img src="{{ honors.image.url }}" width="45" height="45"></div>
+                            </td>
+                            <td>
+                                <p>
+                                    {% for key,value in grades.items %}
+                                        {% if key == honors.grade %}
+                                            {{ value }}
+                                        {% endif %}
+                                        {% endfor %}
+                                </p>
+                            </td>
+
+                            <td>
+                                <label class="switch">
+                                    <input onchange="item_Enable(this,'{% url 'panel:panel_honors_enable' %}')" type="checkbox" value="{{ honors.id }}"
+                                            {% if honors.is_published == True %}
+                                           checked
+                                            {% else %}
+                                            {% endif %}
+                                    >
+
+                                    <span class="item_Enable"></span>
+                                    <span class="tooltip">غیر فعال</span>
+                                </label>
+                            </td>
+
+
+                            <td>
+                                <a href="{% url 'panel:panel_honors_edit' honors.id %}" title="ویرایش">
+                                    <i class="fa fa-pen" aria-hidden="true"></i>
+                                </a>
+                                <a onclick="item_Delete({{ honors.id }},'{% url 'panel:panel_honors_delete' %}')" title="حذف"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+                {% else %}
+                    <p>افزودن عکس</p>
+                {% endif %}
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extrastyle1 %}
+    <script>
+            function item_hide_close(x) {
+            $(".item_hide_box").fadeOut()
+        }
+    </script>
+{% endblock %}

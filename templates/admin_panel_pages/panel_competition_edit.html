@@ -1,0 +1,512 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}"/>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/kama_datepicker.css' %}"/>
+
+{% endblock %}
+{% block title %}| ویرایش مسابقه {% endblock %}
+
+{% block content %}
+   <div class="Panel_Box">
+          <form method="post" action="{% url 'panel:panel_competition_edit' cmp_id %}" class="Panel_form">
+              {% csrf_token %}
+            <div class="action_result"></div>
+            <div class="Panel_Box_title">
+              <span class="title"><a href="">ویرایش مسابقه</a></span>
+
+              <button href="" {% if past == 1 %}title="تاریخ مسابقه گذشته است."{% else %}title="ذخیره"{% endif %} class="Panel_Edit_icon" >
+                <i class="fa fa-floppy-o"></i>
+              </button>
+
+              <a href="{% url 'panel:panel_competition_rank' cmp_id %}" title="افزودن رنکینگ" class="Panel_Edit_icon">
+                <i class="fa fa-plus-square"></i>
+              </a>
+
+              <a href="{% url 'panel:panel_competition_user' cmp_id %}" class="Panel_Edit_icon" title="لیست شرکت کنندگان">
+                <i class="fa fa-user"></i>
+              </a>
+            </div>
+
+            <div class="Panel_item_show">
+              <div class="item_builder">
+                <span class="title">عنوان مسابقه</span>
+                <input type="text" name="Competition_title" value="{{ title }}" disabled="disabled">
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">تاریخ مسابقه</span>
+                <input type="text" name="Competition_date" required  id="data-input_1" autocomplete="off" value="{{ competition_date }}"
+                {% if past == 1 %}
+                    disabled="disabled"
+                {% endif %}
+                >
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">ظرفیت مسابقه</span>
+                <input type="text" name="Competition_Capacity" value="{{ capacity }}"
+                {% if past == 1 %}
+                    disabled="disabled"
+                {% endif %}
+                >
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">تاریخ شروع ثبت نام</span>
+                <input type="text" name="register_start_date" required  id="data-input_2" autocomplete="off" value="{{ register_from }}"
+
+                {% if past == 1 %}
+                    disabled="disabled"
+                {% endif %}
+                >
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">تاریخ پایان ثبت نام</span>
+                <input type="text" name="register_end_date" required  id="data-input_3" autocomplete="off" value="{{ register_to }}"
+                {% if past == 1 %}
+                    disabled="disabled"
+                {% endif %}
+                >
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">جنسیت</span>
+                <select name="Competition_gender" required
+                {% if past == 1 %}
+                    disabled="disabled"
+                {% endif %}>
+                   {% for key,value in genders.items %}
+                        <option value={{ key }}
+                          {% if key == gender %}
+                               selected
+                           {% endif %}
+                           >{{ value }}</option>
+                   {% endfor %}
+                </select>
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">عکس پوستر</span>
+                <input type="file" id="img" name="img_poster" accept="image/*" required
+                {% if past == 1 %}
+                    disabled="disabled"
+                {% endif %}>
+
+
+                <div class="item_help">
+                  <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye" aria-hidden="true"></i></a>
+
+                  <a title="سایز عکس : 310 * 174"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                </div>
+
+                <div class="item_hide_box">
+                  <div class="item_hide">
+                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                    <img src="{{ poster_image.url }}" width="310" height="174">
+                  </div>
+                </div>
+
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">عکس بخشنامه</span>
+                <input type="file" id="img_bakhshname" name="img_bakhshname" accept="image/*" required
+                {% if past == 1 %}
+                    disabled="disabled"
+                {% endif %}
+                >
+
+                <div class="item_help">
+                  <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                  <a title="سایز عکس : 310 * 174"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                </div>
+
+                <div class="item_hide_box">
+                  <div class="item_hide">
+                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                    <img src="{{ bakhshname_image.url }}" width="310" height="174">
+                  </div>
+                </div>
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">رده سنی</span>
+
+                <input type="hidden" name="age_category_list" class="age_category_list">
+
+                   <div class="Category_age_box">
+                     {% if list_category_age_box %}
+                       {% for cat in list_category_age_box %}
+                           {% if forloop.counter == 1 %}
+                            <div class="Category_age">
+                      <div class="category_item_box">
+                        <div class="category_item">
+                          <span>نام</span>
+                            <select name="force" required class="cat_name" {% if past == 1 %}disabled="disabled"{% endif %}>
+                               {% for key,value in age_period.items %}
+                                    <option value={{ key }}
+                                      {% if key == cat.subtitle %}
+                                           selected
+                                       {% endif %}
+                                       >{{ value }}</option>
+                               {% endfor %}
+                          </select>
+                        </div>
+                        <div class="category_item"><span>از تاریخ</span><input autocomplete="off" class="ValidDate cat_from_date" onkeyup="Valid_date(event,this)" onblur="Check_format(this)" type="text" name="force" value="{{ cat.from_birthday.0 }}" {% if past == 1 %}disabled="disabled"{% endif %}></div>
+                        <div class="category_item"><span>تا تاریخ</span><input autocomplete="off" class="ValidDate cat_to_date" onkeyup="Valid_date(event,this)" onblur="Check_format(this)" type="text" name="force" value="{{ cat.to_birthday.0 }}" {% if past == 1 %}disabled="disabled"{% endif %}></div>
+                      </div>
+
+                      <div class="category_item_box">
+                          <div class="category_item">
+                          <span>رده وزنی</span>
+                            {% for w in cat.weights %}
+                                {% if forloop.counter == 1 %}
+                                    <select name="force" class="cat_age" required {% if past == 1 %}disabled="disabled"{% endif %}>
+                                        {% if weights_list %}
+                                            {% for weight in weights_list %}
+                                                <option value="{{ weight.id }}"
+                                                    {% if w == weight.id %}selected{% endif %}
+                                                >{{ weight.title }}
+
+                                                </option>
+                                            {% endfor %}
+
+                                        {% endif %}
+
+                                     </select>
+                        {% if past != 1 %}
+                            <i class="fa fa-plus-square add_cat_weight" onclick="add_cat_weight(this)"></i>
+
+                        {% endif %}
+
+                            </div>
+
+                                {% else %}
+                                    <div class="category_item">
+                                        <span></span>
+                                        <select required class="cat_age" name="force" {% if past == 1 %}disabled="disabled"{% endif %}>
+                                            {% if weights_list %}
+                                                {% for weight in weights_list %}
+                                                    <option value="{{ weight.id }}"
+                                                        {% if w == weight.id %}selected{% endif %}
+                                                         >{{ weight.title }}
+
+                                                    </option>
+                                                {% endfor %}
+
+                                                {% endif %}
+                                        </select>
+                                        {% if past != 1 %}
+                                         <i class="fa fa-minus-square add_cat_weight" onclick="del_cat_weight(this)"></i>
+                                        {% endif %}
+
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                      </div>
+
+                      <div class="clr"></div>
+                        {% if past != 1 %}
+                           <i class="fa fa-plus-square add_cat_age"  onclick="add_cat_age(this)"></i>
+
+                        {% endif %}
+                  </div>
+                   {% else %}
+                               <div class="Category_age">
+                                   <div class="category_item_box">
+                                     <div class="category_item">
+                                      <span>نام</span>
+                                        <select name="force" required class="cat_name"
+                                                {% if past == 1 %}
+                                                    disabled="disabled"
+                                                {% endif %}>
+                                           {% for key,value in age_period.items %}
+                                                <option value={{ key }}
+                                                  {% if key == cat.subtitle %}
+                                                       selected
+                                                   {% endif %}
+                                                   >{{ value }}</option>
+                                           {% endfor %}
+                                        </select>
+                                        </div>
+
+                                    <div class="category_item"><span>از تاریخ</span><input autocomplete="off" class="ValidDate cat_from_date" onkeyup="Valid_date(event,this)" onblur="Check_format(this)" type="text" name="force" value="{{ cat.from_birthday.0 }}" {% if past == 1 %}
+                                     disabled="disabled"{% endif %}></div>
+                                    <div class="category_item"><span>تا تاریخ</span><input autocomplete="off" class="ValidDate cat_to_date" onkeyup="Valid_date(event,this)" onblur="Check_format(this)" type="text" name="force" value="{{ cat.to_birthday.0 }}"  {% if past == 1 %}
+                                     disabled="disabled"{% endif %}></div>
+                               </div>
+                                <div class="category_item_box">
+                          <div class="category_item">
+                          <span>رده وزنی</span>
+                            {% for w in cat.weights %}
+                                {% if forloop.counter == 1 %}
+                                    <select name="force" class="cat_age" required  {% if past == 1 %}
+                                     disabled="disabled"{% endif %}>
+                                        {% if weights_list %}
+                                            {% for weight in weights_list %}
+                                                <option value="{{ weight.id }}"
+                                                    {% if w == weight.id %}selected{% endif %}
+                                                >{{ weight.title }}
+
+                                                </option>
+                                            {% endfor %}
+
+                                        {% endif %}
+
+                                     </select>
+                             {% if past != 1 %}
+                                <i class="fa fa-plus-square add_cat_weight" onclick="add_cat_weight(this)"></i>
+                             {% endif %}
+
+                            </div>
+
+                                {% else %}
+                                    <div class="category_item">
+                                        <span></span>
+                                        <select required class="cat_age" name="force" {% if past == 1 %} disabled="disabled"{% endif %}>
+                                            {% if weights_list %}
+                                                {% for weight in weights_list %}
+                                                    <option value="{{ weight.id }}"
+                                                        {% if w == weight.id %}selected{% endif %}
+                                                         >{{ weight.title }}
+
+                                                    </option>
+                                                {% endfor %}
+
+                                                {% endif %}
+                                        </select>
+                                    {% if past != 1 %}
+                                        <i class="fa fa-minus-square add_cat_weight" onclick="del_cat_weight(this)"></i>
+                                     {% endif %}
+
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                      </div>
+
+                           <div class="clr"></div>
+                               {% if past != 1 %}
+                                   <i class="fa fa-minus-square add_cat_age" onclick="del_cat_age(this)"></i>
+                               {% endif %}
+                               </div>
+                       {% endif %}
+                       {% endfor %}
+                     {% endif %}
+
+                   </div>
+
+
+
+                <div class="clr"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+{% endblock %}
+
+
+
+{% block extrastyle1 %}
+<script src="{% static 'js/kama_datepicker.js' %}"></script>
+
+<script type="text/javascript">
+
+      function add_cat_weight (x)
+      {
+        item = '<div class="category_item"><span></span>' +
+            '<select required class="cat_age" name="force">' +
+            '                            {% if weights_list %}\n'+
+            '                                {% for weight in weights_list %}\n'+
+                '                                    <option value="{{ weight.id }}">{{ weight.title }}</option>\n'+
+                '                                {% endfor %}\n'+
+            '                            {% endif %}' +
+            '</select><i class="fa fa-minus-square add_cat_weight" onclick="del_cat_weight(this)"></i></div>'
+
+        $(x).closest(".category_item_box").append(item)
+      }
+
+      function del_cat_weight (x) {
+        $(x).closest(".category_item").remove()
+      }
+
+      function add_cat_age (x)
+      {
+        item = '<div class="Category_age"><div class="category_item_box">' +
+            '<div class="category_item"><span>نام</span><select name="force" required class="cat_name">' +
+            '    {% for key,value in age_period.items %}\n'+
+                ' <option value={{ key }}>{{ value }}</option>\n'+
+                ' {% endfor %}' +
+            '</select></div><div class="category_item"><span>از تاریخ</span><input autocomplete="off" class="ValidDate cat_from_date" type="text" onkeyup="Valid_date(event,this)" onblur="Check_format(this)" name="force"></div><div class="category_item"><span>تا تاریخ</span><input autocomplete="off" class="ValidDate cat_to_date" type="text" onkeyup="Valid_date(event,this)" onblur="Check_format(this)" name="force"></div></div><div class="category_item_box"><div class="category_item"><span>رده وزنی</span>' +
+            '<select class="cat_age" name="force" required>' +
+                ' {% for weight in weights_list %}\n'+
+                    '<option value="{{ weight.id }}">{{ weight.title }}</option>\n'+
+                '{% endfor %}' +
+            '</select><i class="fa fa-plus-square add_cat_weight" onclick="add_cat_weight(this)"></i></div></div><div class="clr"></div><i class="fa fa-minus-square add_cat_age" onclick="del_cat_age(this)"></i></div>'
+
+        $(x).closest(".Category_age_box").append(item)
+      }
+
+      function Check_format(input)
+      {
+        var regex = /((13|14)\d\d)\/(0\d|1(0|1|2))\/((0|1|2)\d|(3)(1|0))/
+
+        if ($(input).val().length != 0  && !regex.test($(input).val()))
+        {
+          $(input).css("border","1px solid #FF3636")
+        }
+        else
+        {
+          $(input).css("border","1px solid #88abcc")
+        }
+      }
+
+      function Valid_date(evt,input)
+      {
+          var charCode = (evt.which) ? evt.which : event.keyCode
+
+          if (!(charCode >= 48 && charCode <= 57) && !(charCode >= 96 && charCode <= 105) && charCode!=8)
+          {
+              $(input).val($(input).val().substring(0,$(input).val().length-1))
+              return
+          }
+
+          if (($(input).val().length==4 || $(input).val().length==7) && charCode == 8)
+              $(input).val($(input).val().substring(0,$(input).val().length-1))
+
+          if($(input).val().length==4 || $(input).val().length==7)
+              $(input).val($(input).val()+"/")
+      }
+
+
+        $(function()
+        {
+          $(".Panel_form").on("submit", function(event)
+          {
+              var error = 0
+              var input = document.getElementsByClassName("ValidDate");
+              var regex = /((13|14)\d\d)\/(0\d|1(0|1|2))\/((0|1|2)\d|(3)(1|0))/
+
+              for (var i = 0; i < input.length; i++)
+              {
+                if (input[i].value.length != 0 && !regex.test(input[i].value))
+                  error++;
+              }
+
+              if (error)
+              {
+                $(".action_result").text("فرمت تاریخ در رده سنی صحیح نمیباشد")
+                $(".action_result").show()
+                return false
+              }
+              else
+              {
+                age_category = []
+
+                $(".Category_age").each(function ()
+                {
+                  cat_age = []
+
+                  $(this).find(".cat_age").each(function ()
+                  {
+                    cat_age.push($(this).val())
+                  })
+
+                  age_category.push(
+                  {
+                    "name" : $(this).find(".cat_name").val(),
+                    "from_date" : $(this).find(".cat_from_date").val(),
+                    "to_date" : $(this).find(".cat_to_date").val(),
+                    "weight" : cat_age
+                  })
+                })
+
+                $(".age_category_list").val(JSON.stringify(age_category))
+                {#$(".action_result").text("لطفا فیلدهای ضروری را پر کنید")#}
+
+                    var formData = new FormData($(this)[0]);
+                    event.preventDefault();
+                    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+                    $.ajax(
+                    {
+                        processData: false,
+                        contentType: false,
+                        url:  $(".Panel_form").attr("action"),
+                        type: $(".Panel_form").attr("method"),
+                          headers:{
+                        "X-CSRFToken": csrftoken
+                                },
+                        data: formData,
+
+                        success: function(response)
+                        {
+                           // {"code" : "1", "result" : "url"}
+
+                            if (response["code"] == 100)
+                            {
+                                {#$('.action_result').empty().html('<div class="result_success">'+response["result"]+'</div>');#}
+                                window.location = response["url"]
+                            }
+                            else
+                            {
+                                $('.action_result').text(response['error']);
+                                $(".action_result").show();
+
+                            }
+                        }
+
+
+
+
+
+              })}
+          });
+      });
+
+      function del_cat_age (x) {
+        $(x).closest(".Category_age").remove()
+      }
+
+      kamaDatepicker('data-input_1', {
+        nextButtonIcon: "{% static 'panel/images/timeir_next.png' %}"
+        , previousButtonIcon:"{% static 'panel/images/timeir_prev.png' %}"
+        , forceFarsiDigits: true
+        , markToday: true
+        , markHolidays: true
+        , highlightSelectedDay: true
+        , sync: true
+      });
+
+      kamaDatepicker('data-input_2', {
+        nextButtonIcon: "{% static 'panel/images/timeir_next.png' %}"
+        , previousButtonIcon: "{% static 'panel/images/timeir_prev.png' %}"
+        , forceFarsiDigits: true
+        , markToday: true
+        , markHolidays: true
+        , highlightSelectedDay: true
+        , sync: true
+      });
+
+      kamaDatepicker('data-input_3', {
+        nextButtonIcon: "{% static 'panel/images/timeir_next.png' %}"
+        , previousButtonIcon: "{% static 'panel/images/timeir_prev.png' %}"
+        , forceFarsiDigits: true
+        , markToday: true
+        , markHolidays: true
+        , highlightSelectedDay: true
+        , sync: true
+      });
+    </script>
+{% endblock %}

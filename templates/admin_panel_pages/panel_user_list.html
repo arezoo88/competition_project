@@ -1,0 +1,151 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}| لیست کاربران {% endblock %}
+
+{% block content %}
+    <div class="Panel_Box">
+        <form class="search_in_user" method="post" action="{% url 'panel:panel_user_search' %}">
+            {% csrf_token %}
+            <div class="search_box_title">
+                <span>جستجو براساس</span>
+                <button><i class="fa fa-search"></i></button>
+            </div>
+
+            <div class="search_box_item">
+                <span>نوع مسابقه</span>
+                <select required class="cat_name_input" name="type_cmp">
+                    <option value="null" selected>انتخاب</option>
+                    <option value="2">هردو</option>
+                    <option value="0">جودو</option>
+                    <option value="1">دفاع شخصی</option>
+                </select>
+            </div>
+
+            <div class="search_box_item">
+                <span>وضعیت</span>
+                <select class="cat_age_input" name="status_user" required>
+                    <option value="null" selected>انتخاب</option>
+                    <option value="1">فعال</option>
+                    <option value="0">غیر فعال</option>
+                </select>
+            </div>
+        </form>
+    </div>
+    <div class="Panel_Box">
+        <div class="Panel_Box_title">
+            <span class="count"><a></a></span>
+        </div>
+        <div class="Panel_item_List">
+            <table cellspacing="1">
+                <thead>
+                <tr>
+                    <th>شماره</th>
+                    <th>نام</th>
+                    <th>نام خانوادگی</th>
+					<th>کد ملی</th>
+                    <th>تاریخ تولد</th>
+                    <th>جنسیت</th>
+                    <th>گرایش</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if users_list %}
+                    {% for user in users_list %}
+
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ user.first_name }}</td>
+                            <td>{{ user.last_name }}</td>
+                            <td>{{ user.username }}</td>
+                            <td><p>{{ user.birth_date }}</p></td>
+                            <td>
+                                {% if genders %}
+                                    {% for key,value in genders.items %}
+                                        {% if  user.gender == key %}
+                                            {{ value }}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.interest == 0 %}
+                                    جودو
+                                {% elif user.interest == 1 %}
+                                    دفاع شخصی
+                                {% else %}
+                                    جودو/دفاع شخصی
+                                {% endif %}
+
+                            </td>
+                            <td>
+                                <label class="switch">
+                                    <input onchange="item_Enable(this,'{% url 'panel:panel_user_enable' %}')"
+                                           type="checkbox" value="{{ user.id }}"
+                                            {% if user.activate_status == True %}
+                                           checked
+                                            {% else %}
+                                            {% endif %}
+                                    >
+
+                                    <span class="item_Enable"></span>
+                                    {% if user.activate_status == True %}
+                                        <span class="tooltip">فعال</span>
+                                    {% else %}
+                                        <span class="tooltip">غیر فعال</span>
+
+                                    {% endif %}
+                                </label>
+                            </td>
+                            <td>
+                                <a href="{% url 'panel:panel_user_edit' user.id %}" title="ویرایش">
+                                    <i class="fa fa-pen" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        $(".count").find("a").text("لیست کابران : " + $(".Panel_item_List tbody tr").size())
+        $('.search_in_user').submit(function () {
+            event.preventDefault();
+
+            var status_user = $('[name=status_user]').val();
+            var type_cmp = $('[name=type_cmp]').val();
+
+            $.ajax(
+                {
+
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        Accept: "application/json",
+                    },
+                    data: {
+                        'status_user': status_user,
+                        'type_cmp': type_cmp,
+                    },
+
+                    success: function (response) {
+                        $('tbody').html(response);
+                        $(".count").find("a").text("لیست کابران : " + $(".Panel_item_List tbody tr").size())
+
+                    }
+                });
+        })
+    </script>
+{% endblock %}
+

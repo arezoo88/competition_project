@@ -1,0 +1,235 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}| شرکت کنندگان {% endblock %}
+
+{% block content %}
+    <div class="Panel_Box">
+          <form>
+            <div class="search_box_title">
+              <span>جستجو براساس</span>
+              <button><i class="fa fa-search"></i></button>
+            </div>
+
+            <div class="search_box_item">
+               <span>رده سنی</span>
+               <select required class="cat_name_input">
+                  <option value="1" selected>نونهالان</option>
+                  <option value="2">نوجوانان</option>
+                  <option value="3">جوانان</option>
+                  <option value="4">بزرگسالان</option>
+                </select>
+            </div>
+
+            <div class="search_box_item">
+               <span>رده وزنی</span>
+               <select class="cat_age_input" required>
+                  <option>+60</option>
+                  <option>70 - 80</option>
+                </select>
+            </div>
+          </form>
+        </div>
+     <div class="Panel_Box">
+{#       <form method="post" action="{% url 'panel:panel_user_in_competition_edit' %}" class="gallery_form_add">#}
+
+          <div class="Panel_Box_title">
+          <div class="action_result"></div>
+              {% if users %}
+                  <span><a href="">{{ users.0.cid.title }}</a></span>
+              {% endif %}
+
+          </div>
+
+          <div class="item_hide_box"><div class="item_hide border_radius"></div></div>
+          <div class="Panel_item_List">
+            <table cellspacing="1">
+              <thead>
+                <tr>
+                  <th>شماره</th>
+                  <th>عکس</th>
+                  <th>نام</th>
+                  <th>نام خانوادگی</th>
+                  <th>تاریخ تولد</th>
+                  <th>رده سنی</th>
+                  <th>رده وزنی</th>
+                  <th>جایگاه</th>
+                  <th>وضعیت</th>
+                  <th>عملیات</th>
+                </tr>
+              </thead>
+
+              <tbody>
+              {% if users %}
+                {% for user in users %}
+                  <tr class="user_">
+                  <input type="hidden" value="{{ user.cid.cmp_id }},{{ user.cid.id }},{{ user.cid.subtitle }},{{ user.uid.gender }},{{ user.id }}" class="id_">
+
+                  <td>{{ forloop.counter }}</td>
+                  <td>
+                    <div class="upload_img_box">
+                      <input type="file" id="img" name="user_img_in_competition" accept="image/*" class="upload_img">
+                      <i class="fa fa-pen upload_img_icon"></i>
+                    </div>
+
+                    <img src="{{ user.image.url }}" width="40" height="40">
+                  </td>
+                  <td>{{ user.uid.user.first_name }}</td>
+                  <td>{{ user.uid.user.last_name }}</td>
+                  <td><p>{{ user.uid.birth_date }}</p></td>
+                  <td><input type="text" name="place" class="place_input" value="{{ user.place_id.place }}"></td>
+                      <td>
+                        <label class="switch">
+                          <input onchange="item_Enable(this,'{% url 'panel:panel_user_in_competition_enable' %}')" type="checkbox" value="{{ user.id }}"
+                          {% if user.status == True %}
+                              checked
+                          {% else %}
+                          {% endif %}
+                          >
+                          <span class="item_Enable"></span>
+                          <span class="tooltip">غیر فعال</span>
+                        </label>
+                      </td>
+                  <td>
+                    <a href="{% url 'panel:panel_user_edit' user.uid_id %}" title="ویرایش مشخصات">
+                      <i class="fa fa-pen" aria-hidden="true"></i>
+                    </a>
+                        <a title="حذف از مسابقه" onclick="user_reject({{ user.id }},{{ user.cid_id }})" data-id="1234"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% endif %}
+
+
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+{% endblock %}
+{% block extrastyle1 %}
+     <script type="text/javascript">
+
+      function user_reject (userid,cid)
+      {
+        {#userid = $(x).attr("data-id");#}
+        $(".item_hide_box").fadeIn();
+        $(".item_hide").empty().append('<form><div class="item_hide_title">توضیحات</div><input name="userid" type="hidden" value="'+userid+'"><textarea name ="desc" class="item_hide_desc"></textarea><div><button class="item_hide_btn register">ثبت</button><span onclick="item_hide_close(this)" class="item_hide_btn">بستن</span> <div class=""clr></div></div></form>')
+
+      }
+
+      function item_hide_close (x)
+      {
+        $(".item_hide_box").fadeOut()
+      }
+
+
+
+
+
+    $(document).ready(function () {
+      $('.user_').each(function (i,row) {
+          $(this).on('change','.cat_name_input',function () {
+              var val = $(this).parent().parent().find("input[class^='id_']").val();
+              val = val.split(',');
+              cmp_id = val[0];
+              id = val[1];
+              subtitle = val[2];
+              gender = val[3];
+              data_ = {
+                  'cmp_id':cmp_id,
+                  'id':id,
+                  'gender':gender,
+              };
+              subtitle_change = $(this).val();
+              data_['subtitle_change']=subtitle_change;
+
+            $.ajax({
+              url:'{% url "panel:update_weight" %}',
+              type:'post',
+              headers:{
+                Accept: "application/json"
+                      },
+              data:data_,
+              success: function(response){
+                   $(row).find(".cat_age_input").empty().append(response);
+                    }
+             });
+      });
+          var val = $(row).find("input[class^='id_']" ).val();
+          val = val.split(',');
+          cmp_id = val[0];
+          id = val[1];
+          subtitle = val[2];
+          gender = val[3];
+          data_ = {
+              'cmp_id':cmp_id,
+              'id':id,
+              'gender':gender,
+          };
+        data_['subtitle']=subtitle;
+         $.ajax({
+          url:'{% url "panel:update_weight" %}',
+          type:'post',
+          headers:{
+            Accept: "application/json"
+
+                  },
+          data:data_,
+          success: function(response){
+              $(row).find('td:nth-child(6)').after(response)
+          }
+      });
+      });
+  });
+
+
+
+        $('.user_').each(function (i, row) {
+
+            $(this).find('.place_input').change(function(e) {
+                if ($(this).val() == '' || $.isNumeric($(this).val())==false || ($(this).val()).length >3 ){
+                    $(this).val('pr');
+                }
+
+                var val = $(row).find("input[class^='id_']" ).val();
+                val = val.split(',');
+                cmp_id = val[0];
+                pr_k = val[4];
+                place_id = $(this).val();
+                $.ajax({
+                  url:'{% url "panel:point_save" %}',
+                  type:'post',
+                  headers:{
+                    Accept: "application/json"
+                          },
+                  data:{'place_id':place_id,'pr_k':pr_k,'cmp_id':cmp_id},
+              success: function(response){
+                    $(row).find('.place_input').val(response['result']);
+              }
+             });
+
+
+
+            });
+
+
+
+        });
+
+
+    {#$('form').submit(function () {#}
+    {#    alert()#}
+
+
+
+
+
+
+
+
+
+    </script>
+{% endblock %}

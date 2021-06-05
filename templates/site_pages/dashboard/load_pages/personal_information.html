@@ -1,0 +1,92 @@
+<div class="user_profile_info">
+
+    <div class="user_profile_50">
+        <div class="user_input box_80">
+            <p>نام</p>
+            <input type="text" name="first_name" value="{{ profile_info.first_name }}" placeholder="نام خود را وارد نمایید" required>
+        </div>
+
+        <div class="user_input box_80">
+            <p>نام خانوادگی</p>
+            <input type="text" name="last_name" placeholder="نام خانوادگی خود را وارد نمایید" value="{{ profile_info.last_name }}" required>
+        </div>
+
+        <div class="user_input box_80">
+            <p>شماره موبایل</p>
+            <input type="text" name="mobile" value="{{ profile_info.phone }}" required>
+        </div>
+
+
+        <div class="user_input box_80">
+            <p>کد ملی</p>
+            <input type="text" name="national_code" value="{{ profile_info.username }}" readonly required>
+        </div>
+
+        <div class="user_input box_80">
+            <p>تاریخ تولد</p>
+            <input type="text" name="birth_date" value="{{ profile_info.birth_date }}" placeholder="تاریخ تولد خود را وارد نمایید" required id="data-input">
+        </div>
+    </div>
+
+    <div class="user_profile_50">
+        <div class="user_input box_80">
+            <p>جنسیت</p>
+            <select name="gender" required>
+
+                {% for key,value in genders.items %}
+                    <option value={{ key }}
+                                    {% if key == profile_info.gender %}
+                                        selected
+                                    {% endif %}
+                    >{{ value }}</option>
+                {% endfor %}
+
+            </select>
+        </div>
+        <div class="user_input box_80">
+            <p>آدرس</p>
+            <input type="text" name="address" placeholder="آدرس محل سکونت خود را وارد نمایید" value="{{ profile_info.address }}">
+        </div>
+        <div class="user_input box_80">
+            <p>عکس کارت ملی</p><i class="fa fa-eye abs_icon" onclick="show_item_hide(this)"></i>
+            <input type="file" id="img" name="national_img" accept="image/*"
+
+                    {% if profile_info.national_document_image != '' %}
+                    {% else %}
+                   required
+                    {% endif %}
+            >
+
+            <div class="profile_item_hide_box">
+                <div class="profile_item_hide">
+                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                    <div class="item_hide_img">
+                        {% if profile_info.national_document_image %}
+                            <img src="{{ profile_info.national_document_image.url }}" width="400" height="250">
+                        {% else %}
+                            <img src="" width="400" height="250">
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="user_input box_80">
+            <p>گرایش</p>
+            <select name="field" required>
+                <option value="0" {% if profile_info.interest == 0 %}selected{% endif %}>جودو</option>
+                <option value="1" {% if profile_info.interest == 1 %}selected{% endif %}>دفاع شخصی</option>
+                <option value="2" {% if profile_info.interest == 2 %}selected{% endif %}>هردو</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="clr"></div>
+</div>
+
+<div class="user_input">
+    <button class="button">
+        ویرایش اطلاعات
+    </button>
+</div>

@@ -1,0 +1,71 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}| پروفایل  {% endblock %}
+
+{% block content %}
+    <div class="Panel_Box">
+        <div class="Panel_Box_title">
+            <span>اطلاعات شخص حقیقی</span>
+            <a href="{% url 'panel:panel_profile_change_pass' %}" title="تغییر رمز عبور"
+               class="Panel_Edit_icon Password"></a>
+            <a href="{% url 'panel:panel_profile_edit' %}" title="ویرایش اطلاعات" class="Panel_Edit_icon Edit"></a>
+        </div>
+
+        <div>
+            <div class="Panel_UserProfile">
+                <div>
+                    {% if profile_info.personal_image %}
+                        <img src="{{ profile_info.personal_image.url }}"  width="155" height="155">
+                    {% else %}
+                        <img src="{% static 'panel/images/Panel-Profile.jpg' %}">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="Panel_UserInfo">
+                <table>
+                    <tr>
+                        <td>نام : {{ profile_info.first_name }}</td>
+                        <td>نام خانوادگی : {{ profile_info.last_name }}</td>
+                        <td>کد ملی : {{ profile_info.username }}</td>
+
+
+                    </tr>
+
+                    <tr>
+                        <td>جنسیت :
+                            {% if genders %}
+                                {% for key,value in genders.items %}
+                                    {% if  profile_info.gender == key %}
+                                        {{ value }}
+
+                                    {% endif %}
+
+                                {% endfor %}
+                            {% endif %}
+
+
+                        </td>
+                        <td>تاریخ تولد :{{ profile_info.birth_date }} </td>
+                        <td>موبایل : {{ profile_info.phone }}</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>کد پستی : {{ profile_info.postal_code }}</td>
+                        <td colspan="2">ایمیل : {{ profile_info.email }}</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="3">آدرس : {{ profile_info.address }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="clr"></div>
+        </div>
+    </div>
+
+{% endblock %}

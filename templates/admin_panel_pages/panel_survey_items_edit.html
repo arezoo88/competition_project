@@ -1,0 +1,99 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}|مدیریت گزینه ها {% endblock %}
+{% block content %}
+
+    <div class="Panel_Box">
+        <div class="Panel_Box_title">
+            <span class="title"><a href="">مدیریت گزینه ها</a></span>
+        </div>
+
+        <div class="option_box" style="min-height:400px">
+            <div class="action_result"></div>
+
+            {% if items %}
+                {% for item in items %}
+                    <div class="plus_box_age">
+                        <i class="fa fa-pen tools_option" aria-hidden="true" onclick="edit_option(this, {{ item.id }})"></i>
+                        <i class="fa fa-trash tools_option" aria-hidden="true" onclick="del_option(this,  {{ item.id }})"></i>
+
+                        <div class="item_builder">
+                            <span class="title">گزینه {{ forloop.counter }}</span>
+                            <input type="text" name="option" value="{{ item.choice_text }}">
+                            <div class="clr"></div>
+                        </div>
+
+
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        function edit_option(x, id) {
+            $(".action_result").hide();
+
+            $.ajax(
+                {
+                    url: window.location.pathname,
+                    type: "post",
+                    data: {
+                        item: id,
+                        text: $(x).closest(".plus_box_age").find("input[type=text]").val(),
+                        type: 'edit'
+                    },
+
+                    success: function (response) {
+                        if (response["code"] == 100) {
+                            $('.action_result').empty().text(response["text"]);
+                            $(".action_result").show();
+
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        }
+
+        function del_option(x, id) {
+            $(".action_result").hide();
+            $.ajax(
+                {
+                    url: window.location.pathname,
+                    type: "post",
+                    data: {
+                        item: id,
+                        type: 'delete'
+                    },
+
+                    success: function (response) {
+                        if (response["code"] == 100) {
+
+                            $(x).closest(".plus_box_age").remove();
+                            $('.action_result').empty().text(response["text"]);
+                            $(".action_result").show();
+
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+
+                        $(".option_box").find(".plus_box_age").each(function (index) {
+                            $(this).find(".title").text("گزینه " + (index + 1))
+                        })
+                    }
+                });
+        }
+    </script>
+{% endblock %}
+

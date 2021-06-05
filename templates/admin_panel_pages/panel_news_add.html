@@ -1,0 +1,108 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}|افزودن خبر{% endblock %}
+
+{% block content %}
+    <div class="Panel_Box">
+    <form method="post" action="{% url 'panel:panel_news_add' %}" enctype="multipart/form-data" class="form_news">
+           {% csrf_token %}
+    <div class="action_result"></div>
+    <div class="Panel_Box_title">
+        <span class="title"><a href="">تعریف خبر</a></span>
+        <button href="{% url 'panel:panel_news_add' %}" title="ذخیره" class="Panel_Edit_icon">
+            <i class="fa fa-floppy-o"></i>
+        </button>
+    </div>
+          {{ form.media }}
+
+        <div class="Panel_item_show">
+
+        {% for field in form %}
+            <div class="item_builder">
+            {{ field.label_tag }}
+            {{ field }}
+            {% for error in field.errors %}
+
+              <p style="color: red">{{ error }}</p>
+
+        {% endfor %}
+        </div>
+        {% endfor %}
+        </div>
+    </form>
+    </div>
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+           $('.item_builder').each(function (index,el) {
+               if(index==3){
+                   var input = $(this).find('div');
+               }
+               else if(index==2){
+                   var input = $(this).find('textarea');
+                   $(this).find('textarea').attr('rows',3);
+                   $(this).find('textarea').css('width','30%');
+                   $(this).find('textarea').attr('placeholder','توضیح کوتاه برای خبر(حداکثر ۳۰ کلمه)');
+               }
+               else { var input = $(this).find('input');
+}
+               $(this).empty();
+               if(index==0){
+                $(this).append('<span class="title">عنوان خبر</span>');
+
+               }
+               else if(index==1){
+                $(this).append('<span class="title">تضویر خبر</span>');
+
+               }
+               else if(index==2){
+                $(this).append('<span class="title">متن کوتاه خبر</span>');
+
+               }
+               else {
+                   $(this).append('<span class="title">متن خبر</span>');
+
+               }
+               $(this).append(input);
+               $(this).append('<div class="clr"></div>')
+
+           })
+        });
+
+
+        $(".form_news").on("submit", function (event) {
+            for (instance in CKEDITOR.instances) {
+                CKEDITOR.instances[instance].updateElement();
+                }
+            var formData = new FormData($(this)[0]);
+            $(".action_result").hide();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+
+                        if (response["code"] == 100) {
+                            window.location = response["url"]
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        });
+    </script>
+{% endblock %}

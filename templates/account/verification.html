@@ -1,0 +1,96 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>فدراسیون جودو استان البرز</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+<div id="Wrapper_resize" class="Fixed direction">
+    <div id="Wrapper">
+        <div class="user_box_center">
+            <div class="user box-shadow" id="verification">
+                <form action="{% url 'account:confirm' %}" method="post" class="verification_form">
+                    {% csrf_token %}
+                    <div class="user_head">
+                        <a id="resend">دریافت مجدد کد تایید</a>
+                    </div>
+                    <div class="user_input_box">
+
+                        <div class="user_input">
+                            <p>کد تایید ارسال شده وارد نمایید</p>
+                            <input type="text" name="code" placeholder="کد تایید" required>
+
+                        </div>
+
+                        <div class="user_input">
+                            <button class="button">
+                                <i class="fa fa-arrow-alt-square-right"></i>
+                                ارسال
+                            </button>
+                        </div>
+
+                        <div class="Loading"><img src="{% static 'images/load.gif' %}" alt="loading"/></div>
+                        <div class="result">
+                        </div>
+                    </div>
+
+                    <div class="user_help">
+                        <a href="{% url 'account:register' %}">قبلا در سایت ثبت نام کرده اید ؟ <span style="color:red">وارد شوید</span></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="clr"></div>
+    </div>
+</div>
+<script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
+<script type="text/javascript">
+    $('#resend').click(function () {
+        $.ajax(
+            {
+                url: '{% url 'account:resend_sms_code' %}',
+                type: 'post',
+                success: function (response) {
+                    $(".Loading").fadeOut();
+                    $('.result').empty().html('<div class="result_error">' + response["result"] + '</div>');
+
+                }
+            });
+
+    });
+    $(function () {
+        $(".verification_form").on("submit", function (event) {
+            $(".result").empty();
+            $(".Loading").fadeIn();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+            $.ajax(
+                {
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: $(this).serialize(),
+
+                    success: function (response) {
+                        $(".Loading").fadeOut();
+
+                        if (response["code"] == 1) {
+                            window.location = response["result"]
+                        } else {
+                            $('.result').empty().html('<div class="result_error">' + response["result"] + '</div>');
+                        }
+                    }
+                });
+        });
+    });
+</script>
+</body>
+</html>

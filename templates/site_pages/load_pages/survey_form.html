@@ -1,0 +1,14 @@
+{% load mathfilters %}
+{% if choices_question %}
+    {% for choice in choices_question %}
+        <div class="progressbar_item">
+            <input id="radio_{{ forloop.counter }}" {% if user.is_authenticated %}{% if user_choice_selected.choice_id == choice.choice_id %}checked{% endif %}{% endif %} type="radio" name="Survey" onchange="Survey_result('{% url 'polls:vote' %}',{{ choice.choice_id }})">
+            <label for="radio_{{ forloop.counter }}">{{ choice.choice_text }}</label>
+
+            <div class="w3-light-grey">
+                <div class="w3-container w3-blue" style="width:{{ 100|mul:choice.comment | div:comment_count  |floatformat }}%">{{ 100|mul:choice.comment | div:comment_count  |floatformat }}%</div>
+            </div>
+        </div>
+    {% endfor %}
+    <p style="color: red">{{ msg }}</p>
+{% endif %}

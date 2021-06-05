@@ -1,0 +1,116 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+{% endblock %}
+{% block title %}|لیست رتیه بندی ها{% endblock %}
+
+{% block content %}
+
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div id="wrapper_74_Box">
+                <div class="wrapper_74 item_list">
+                    <div class="container box-shadow">
+                        <div class="container_header">
+                            <div class="container_title"><a href="">رتبه بندی استانی</a></div>
+                            <div class="search_box">
+                                <form acion="/" class="filters">
+                                    <div class="filter_item">
+                                        <select name="gender">
+                                            <option value="">جنسیت</option>
+                                            <option value="">آقا</option>
+                                            <option value="">خانم</option>
+                                        </select>
+
+                                        <select name="Weight_category">
+                                            <option value="">رده وزنی</option>
+                                            <option value="">-60</option>
+                                            <option value="">+70</option>
+                                        </select>
+                                    </div>
+                                    <div class="clr"></div>
+                                </form>
+                            </div>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="container_content center_content">
+                            <div>
+
+
+                                {#                                    <div class="Loading"><img src="images/load.gif" alt="loading" /></div>#}
+                                <div class="item_list_result">
+                                    {% for user_rank in users_ranks_in_cmp %}
+
+                                        <a href="" class="item_list_list">
+                                            <div class="item_list_img"><img src="images/18436.jpg" width="40" height="40"></div>
+                                            <div class="item_list_info">
+                                                <div class="item_list_name">{{ user_rank.firstname }} {{ user_rank.lastname }}</div>
+                                                <div class="item_list_Flag">
+                                                    <img src="images/Ranking_Flag.jpg" width="20" height="15"> ایران
+                                                </div>
+                                            </div>
+                                            <div class="item_list_Category">{{ user_rank.sum }}</div>
+
+                                            <div class="clr"></div>
+                                        </a>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+
+                            <div class="paging"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="wrapper_26_Box">
+                <div class="wrapper_26 box-shadow item_list">
+                    <div class="side_bar"></div>
+                </div>
+            </div>
+
+
+            <div class="clr"></div>
+        </div>
+    </div>
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+
+
+        $(".Loading").fadeIn();
+        $.ajax(
+            {
+                url: "Ranking_Result.html",
+                type: "post",
+                data: {},
+
+                success: function (response) {
+                    $(".Loading").fadeOut();
+                    $(".item_list_result").empty().html(response);
+                }
+            });
+
+        $(function () {
+            $(".filters").on("submit", function (event) {
+                $(".Loading").fadeIn()
+                $(".item_list_result").empty()
+                event.preventDefault();
+
+                $.ajax(
+                    {
+                        url: $(".filters").attr("action"),
+                        type: $(".filters").attr("method"),
+                        data: $(this).serialize(),
+
+                        success: function (response) {
+                            $(".Loading").fadeOut()
+                            $(".item_list_result").empty().html(response);
+                        }
+                    });
+            });
+        });
+    </script>
+{% endblock %}

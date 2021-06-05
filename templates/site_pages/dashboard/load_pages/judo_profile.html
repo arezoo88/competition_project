@@ -1,0 +1,56 @@
+<div class="user_profile_info">
+    <div class="user_profile_50">
+        <div class="user_input box_80">
+            <p>نام مربی</p>
+            <input type="text" value="{{ profile_judo.coach_name }}" name="coach_name" placeholder="نام مربی خود را وارد نمایید" required>
+        </div>
+
+        <div class="user_input box_80">
+            <p>نام باشگاه</p>
+            <input type="text" value="{{ profile_judo.club_name }}" name="club_name" placeholder="نام باشگاه خود را وارد نمایید" required>
+        </div>
+
+        <div class="user_input box_80">
+            <p>سمت</p>
+            <select name="position" required>
+
+                {% for key,value in positions.items %}
+                    <option value={{ key }}
+                                    {% if key == profile_judo.position %}
+                                        selected
+                                    {% endif %}
+                    >{{ value }}</option>
+                {% endfor %}
+
+            </select></div>
+
+        <div class="user_input box_80">
+            <p>فرم q7</p><i class="fa fa-eye abs_icon" onclick="show_item_hide(this)"></i>
+            <input type="file" id="img" name="qform_document" accept="image/*">
+
+            <div class="profile_item_hide_box">
+                <div class="profile_item_hide">
+                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                    <div class="item_hide_img">
+                        {% if profile_judo.qform_document %}
+                            <img src="{{ profile_judo.qform_document.url }}" width="400" height="250">
+                        {% else %}
+                            <img src="" alt="">
+                        {% endif %}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="clr"></div>
+</div>
+
+<div class="user_input">
+    <button class="button">
+        ویرایش اطلاعات
+    </button>
+</div>

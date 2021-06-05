@@ -1,0 +1,181 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+    <title>داشبورد {% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    {% block extrastyle %}
+
+    {% endblock %}
+</head>
+
+<body>
+<form action="{% url 'account:logout' %}" id="logout" method="post">
+    {% csrf_token %}
+
+</form>
+<div class="Panel_Container">
+    <div class="panel_Menu_Box">
+        <div class="panel_Menu">
+            <div class="panel_Menu_icon">
+                <div>
+                    <span>پروفایل ادمین سایت</span>
+                    <a href="javascript:{document.getElementById('logout').submit()}" title="خروج"><span></span></a>
+
+                    <a href="{% url 'panel:panel_dashboard' %}" title="داشبورد"><span></span></a>
+                    <div class="clr"></div>
+                </div>
+            </div>
+
+            <ul class="panel_Menu_ul">
+                <li><a href="{% url 'pages:index' %}">صفحه اصلی سایت</a></li>
+                <li><a href="{% url 'panel:panel_dashboard' %}">داشبورد</a></li>
+                <li><a href="{% url 'panel:panel_profile' %}">پروفایل من</a></li>
+                <li><a href="{% url 'panel:panel_company' %}">معرفی شرکت</a></li>
+                <li><a href="{% url 'panel:panel_news_list' %}">لیست اخبار</a></li>
+                <li><a href="{% url 'panel:panel_gallery_list' %}">لیست تصاویر</a></li>
+                <li><a href="{% url 'panel:panel_survey_list' %}">لیست نظرسنجی</a></li>
+                <li><a href="{% url 'panel:panel_honors_list' %}">تالار افتخارات</a></li>
+                <li><a href="{% url 'panel:panel_competition_list' %}">لیست مسابقات</a></li>
+                <li><a href="{% url 'panel:panel_user_list' %}">لیست کابران سایت</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="Panel_Wrraper_Box">
+        <div class="Panel_top_Details">
+            <div class="Panel_top_img"><a href="{% url 'panel:panel_profile' %}"><img src="{% static 'panel/images/Panel_Logo_3.png' %}" width="80px"></a></div>
+            <div class="Panel_Social_Networks">
+                <span class="Panel_twitter"></span>
+                <span class="Panel_google"></span>
+                <span class="Panel_facebook"></span>
+                <span class="Panel_telegram"></span>
+            </div>
+            <div class="clr"></div>
+        </div>
+
+
+        {% block content %}
+
+        {% endblock %}
+
+
+        {% include 'admin_panel_pages/partials/_footer.html' %}
+    </div>
+
+    <div class="clr"></div>
+</div>
+
+
+<script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
+<script type="text/javascript">
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+    var isIE = false || !!document.documentMode;
+    var isChrome = !!window.chrome && !!window.chrome.webstore;
+
+    if (isFirefox) {
+        var MinHeight = window.innerHeight;
+        $(".Panel_Wrraper_Box").css("min-height", MinHeight + "px")
+    } else if (isIE) {
+        var MinHeight = window.innerHeight
+        $(".Panel_Wrraper_Box").css("min-height", MinHeight + "px")
+    } else if (isChrome) {
+        var MinHeight = window.innerHeight;
+        $(".Panel_Wrraper_Box").css("min-height", MinHeight + "px")
+    } else {
+        var MinHeight = window.innerHeight;
+        $(".Panel_Wrraper_Box").css("min-height", MinHeight + "px")
+    }
+    //$(".panel_Menu_Box").css("min-height", $(".Panel_Wrraper_Box").height())
+
+    $(".Panel_Seprator").each(function () {
+        $(this).text(parseInt($(this).text()).toLocaleString())
+    });
+    {#------------------------------#}
+
+    function show_item_hide(x) {
+        $(x).closest(".item_builder").find(".item_hide_box").fadeIn()
+    }
+
+    function item_hide_close(x) {
+        $(x).closest(".item_builder").find(".item_hide_box").fadeOut()
+    }
+
+    {#--------------------#}
+
+    function item_Enable(a, href) {
+
+        item_id = $(a).val();
+        if ($(a).prop("checked") == true)
+            item_status = 1;
+
+        else if ($(a).prop("checked") == false)
+            item_status = 0;
+
+        $.ajax(
+            {
+                url: href,
+                type: "post",
+                headers: {
+                    Accept: "application/json"
+                },
+                data: {
+                    id: item_id,
+                    status: item_status
+                },
+
+                success: function (response) {
+                    if (response['code'] == 100) {
+                         if (item_status == 0) {
+                            $(a).closest(".switch").find(".tooltip").text("غیرفعال");
+                        } else if (item_status == 1) {
+                            $(a).closest(".switch").find(".tooltip").text("فعال");
+                        }
+                        if ('url' in response){
+                            window.location = response["url"]
+                        }
+
+                    }
+                }
+            });
+    }
+
+    function item_Delete(id, href) {
+        $(".item_hide_box_remove").fadeIn();
+        $(".item_hide_box_remove .item_hide").empty().append('<form class="delete_form"   method="post"><div class="item_hide_title"></div><input name="news_id" type="hidden" value="' + id + '"><div style="margin-bottom:30px">در صورت حذف امکان بازیابی وجود ندارد، آیا مطمئن هستید ؟</div><div><button class="item_hide_btn">بله</button><span onclick="item_hide_close(this)" class="item_hide_btn">خیر</span> <div class=""clr></div></div></form>')
+        $(".item_hide_box_remove .item_hide").find('form').attr('action', href)
+    }
+
+    $(document).on('submit', '.delete_form', function () {
+        event.preventDefault();
+        $.ajax(
+            {
+
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                headers: {
+                    Accept: "application/json",
+
+                },
+                data: {
+                    id: $(this).find('input').val(),
+                },
+                success: function (response) {
+                    if (response['code'] == 100) {
+                        window.location = response["url"]
+                    } else {
+                        $(".action_result").show();
+
+                        $('.action_result').text(response['error'])
+                    }
+                }
+
+            });
+    });
+</script>
+{% block extrastyle1 %}
+
+{% endblock %}
+
+</body>
+</html>

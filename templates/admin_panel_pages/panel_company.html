@@ -1,0 +1,145 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}"/>
+{% endblock %}
+{% block title %}| معرفی شرکت {% endblock %}
+
+{% block content %}
+    <div class="Panel_Box">
+        <form method="post" action="{% url 'panel:panel_company' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="action_result"></div>
+            <div class="Panel_Box_title">
+                <span class="title"><a href="">معرفی شرکت</a></span>
+                <button href="" title="ذخیره" class="Panel_Edit_icon">
+                    <i class="fa fa-floppy-o"></i>
+                </button>
+            </div>
+
+            <div class="Panel_item_show">
+                <div class="item_builder">
+                    <span class="title">نام شرکت</span>
+                    <input type="text" name="company_name" value="{{ company_info.company_name }}">
+                    <div class="clr"></div>
+                </div>
+                <div class="item_builder">
+                    <span class="title">لوگو شرکت</span>
+                    <input type="file" id="img" name="logo" accept="image/*">
+
+                    <div class="item_help">
+                        <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                        <a title="سایز عکس : 150 * 150"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                    </div>
+
+                    <div class="item_hide_box">
+                        <div class="item_hide_logo">
+                            <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                            {% if company_info.logo_img %}
+                                <img src="{{ company_info.logo_img.url }}" width="150" height="150">
+
+                            {% else %}
+                                <img src="{% static 'images/Logo_1.jpg' %}" width="150" height="150">
+
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">نام مدیر</span>
+                    <input type="text" name="manager_name" value="{{ company_info.manager_name }}">
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">تلفن</span>
+                    <input type="text" name="phone" value="{{ company_info.phone }}">
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">فکس</span>
+                    <input type="text" name="fax" value="{{ company_info.fax }}">
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">آدرس</span>
+                    <input type="text" name="address" value="{{ company_info.address }}">
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">بنر</span>
+                    <input type="file" id="img" name="img" accept="image/*">
+
+                    <div class="item_help">
+                        <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                        <a title="سایز عکس : 1297 * 855"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                    </div>
+
+                    <div class="item_hide_box">
+                        <div class="item_hide_baner">
+                            <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                            {% if company_info.banner_img %}
+                                <img src="{{ company_info.banner_img.url }}" width="800" height="527">
+
+                            {% else %}
+                                <img src="{% static 'images/slide_1.jpg' %}" width="800" height="527">
+
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">درباره شرکت</span>
+                    <textarea name="about" cols="50" rows="10">{{ company_info.about }}</textarea>
+                    <div class="clr"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        $("form").on("submit", function (event) {
+
+            var formData = new FormData($(this)[0]);
+            $(".action_result").hide();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+
+                        if (response["code"] == 100) {
+                            window.location = response["url"]
+                            $('.action_result').empty().text(response["result"]);
+                            $(".action_result").show();
+                        } else if (response["code"] == 102) {
+                            window.location = response["url"]
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        });
+    </script>
+{% endblock %}

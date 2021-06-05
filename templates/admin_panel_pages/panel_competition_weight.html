@@ -1,0 +1,98 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+
+{% endblock %}
+{% block title %}| افزودن رده وزنی {% endblock %}
+
+{% block content %}
+    <div class="Panel_Box">
+
+        <form method="post" action="{% url 'panel:panel_competition_weight' %}" class="weight_form">
+            {% csrf_token %}
+            <div class="action_result"></div>
+            <div class="Panel_Box_title">
+                <span class="title"><a href="">رده های وزنی</a></span>
+
+                <button href="" title="ذخیره" class="Panel_Edit_icon">
+                    <i class="fa fa-floppy-o"></i>
+                </button>
+            </div>
+
+            <div class="Panel_item_show" style="min-height:300px">
+                {% if w_list %}
+                    {% for w in w_list %}
+
+                        <div class="plus_box_age">
+
+
+                            <div class="item_builder">
+
+                                <span class="title">رده وزنی</span>
+                                <input type="text" value="{{ w.title }}" disabled>
+                                <div class="clr"></div>
+                            </div>
+
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="plus_box_age">
+                    <i class="fa fa-plus-square add_ranking" onclick="add_Ranking(this)"></i>
+
+
+                    <div class="item_builder">
+
+                        <span class="title">رده وزنی</span>
+                        <input type="text" name="w_Category_period" required>
+                        <div class="clr"></div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        function add_Ranking(x) {
+            item = '<div class="plus_box_age"><i class="fa fa-minus-square add_ranking" onclick="del_Ranking(this)"></i><div class="item_builder"><span class="title">رده وزنی</span><input type="text" name="w_Category_period" required><div class="clr"></div></div></div>'
+
+            $(x).closest(".Panel_item_show").append(item)
+        }
+
+        function del_Ranking(x) {
+            $(x).closest(".plus_box_age").remove()
+        }
+
+
+        $(".weight_form").on("submit", function (event) {
+            var formData = new FormData($(this)[0]);
+            $(".action_result").hide();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+                        if (response["code"] == 100) {
+                            window.location = response["url"]
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        });
+
+    </script>
+{% endblock %}

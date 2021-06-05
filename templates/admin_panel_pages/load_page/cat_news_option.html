@@ -1,0 +1,6 @@
+<option value="0">دسته مورد نظر را انتخاب نمایید</option>
+{% if cats_list %}
+    {% for cat in cats_list %}
+        <option value="{{ cat.id }}">{{ cat.title }}</option>
+    {% endfor %}
+{% endif %}

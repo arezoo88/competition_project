@@ -1,0 +1,7 @@
+
+{% if weights_period %}
+    {% for weight in weights_period %}
+        <option value="{{ weight.weight__id }}">{{ weight.weight__title }}</option>
+    {% endfor %}
+{% endif %}
+

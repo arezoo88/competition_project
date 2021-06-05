@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هیئت جودو استان البرز {% block title %}{% endblock %}</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+    {% block extrastyle %}
+
+    {% endblock %}
+</head>
+
+<body>
+
+
+{% include 'site_pages/partials/_navbar.html' with info=info %}
+{% block content %}
+{% endblock %}
+
+{% include 'site_pages/partials/_footer.html' with info=info %}
+
+<div id="Bottom_resize"></div>
+
+
+<script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
+<script type="text/javascript">
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isChrome = !!window.chrome && !!window.chrome.webstore;
+
+    if (isFirefox) {
+        var MinHeight = screen.height - 227
+        $(".center_content").css("min-height", MinHeight + "px")
+    } else if (isIE) {
+        var MinHeight = screen.height - 227
+        $(".center_content").css("min-height", MinHeight + "px")
+    } else if (isChrome) {
+        var MinHeight = screen.height - 227
+        $(".center_content").css("min-height", MinHeight + "px")
+    } else {
+        var MinHeight = screen.height - 227
+        $(".center_content").css("min-height", MinHeight + "px")
+    }
+
+
+    function open_menu(x) {
+        // $("#navigation").find("ul").slideToggle("speed")
+        if ($(x).attr("data-open") == 0) {
+            $(x).attr("data-open", "1")
+            $("#Header_resize").addClass("m_Fixed");
+            $("#navigation").find("ul").css("display", "block")
+        } else {
+            $(x).attr("data-open", "0");
+            $("#Header_resize").removeClass("m_Fixed");
+            $("#navigation").find("ul").css("display", "none")
+        }
+    }
+
+
+</script>
+{% block extrastyle1 %}
+
+{% endblock %}
+
+</body>
+</html>
+

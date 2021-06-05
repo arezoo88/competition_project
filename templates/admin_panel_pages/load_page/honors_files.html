@@ -1,0 +1,31 @@
+<div class="upload_link">
+    {% if honors_files %}
+        {% for file in honors_files %}
+            <span class="item_upload">
+                <div class="upload_btn"><a>مشاهده</a> <a>حذف</a></div>
+                <i class="fa fa-file-{% if ( (".jpg" in file.file.url) or (".png" in file.file.url) )  %}
+                    camera-retro
+                {% elif ( (".mp4" in file.file.url) or (".ogg" in file.file.url) ) %}
+                    video
+                {% elif  (".pdf" in file.file.url)  %}
+                    pdf
+                {% endif %}"
+                ></i>
+                {{ file.title}}
+            </span>
+        {% endfor %}
+
+
+    {% endif %}
+
+
+
+
+
+</div>
+
+{#            {% if ( (".jpg" in status.image.url) or (".png" in status.image.url) ) %}#}
+{#    <img src={{status.image.url}}></img>#}
+{#{% else %}#}
+{#    <video src={{status.image.url}}></video>         #}
+{#{% endif %}#}

@@ -1,0 +1,114 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}| تعریف تالار افتخارات{% endblock %}
+
+{% block content %}
+    <div class="Panel_Box">
+          <form method="post" action="{% url 'panel:panel_honors_add' %}" class="honors_form_add" enctype="multipart/form-data">
+              {% csrf_token %}
+            <div class="action_result"></div>
+            <div class="Panel_Box_title">
+              <span class="title"><a href="">تالار افتخارات</a></span>
+              <button href="" title="ذخیره" class="Panel_Edit_icon">
+                <i class="fa fa-floppy-o"></i>
+              </button>
+            </div>
+
+            <div class="Panel_item_show">
+              <div class="item_builder">
+                <span class="title">نام و نام خانوادگی</span>
+                <input type="text" name="full_name" required>
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">عکس</span>
+                <input type="file" id="img" name="img" accept="image/*" required>
+
+                <div class="item_help">
+                  <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                  <a title="سایز عکس : 200 * 200"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                </div>
+
+                <div class="item_hide_box">
+                  <div class="item_hide" style="height:200px">
+                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                    <img src="{% static 'images/User_Icon.png' %}" width="200" height="200">
+                  </div>
+                </div>
+
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">درجه</span>
+                <select name="honors_grade" required>
+                    {% for key,value in grades.items %}
+                      <option value={{ key }}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">آپلود فایل</span>
+                <input type="file" id="img" name="file_content" accept="image/*" required>
+
+                <div class="item_help">
+                  <a title="مشاهده تصویر" onclick="show_item_hide(this)"></a>
+                </div>
+
+                <div class="clr"></div>
+              </div>
+
+              <div class="item_builder">
+                <span class="title">عنوان فایل آپلود شده</span>
+                <input type="text" name="file_title" required>
+                <div class="clr"></div>
+              </div>
+            </div>
+          </form>
+
+{#          <div class="upload_box">#}
+{#            <div class="upload_title">لیست فایل های آپلود شده : جهت مشاهده جزییات فایل روی آن کلیک کنید</div>#}
+{##}
+{#          </div>#}
+        </div>
+{% endblock %}
+
+
+
+{% block extrastyle1 %}
+    <script type="text/javascript">
+
+        $(".honors_form_add").on("submit", function (event) {
+            var formData = new FormData($(this)[0]);
+            $(".action_result").hide();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+                        if (response["code"] == 100) {
+                            window.location = response["url"]
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        });
+    </script>
+{% endblock %}

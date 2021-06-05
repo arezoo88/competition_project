@@ -1,0 +1,138 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-master.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/kama_datepicker.css' %}"/>
+
+{% endblock %}
+{% block title %}| ویرایش پروفایل {% endblock %}
+
+{% block content %}
+    <div class="Panel_Box">
+        <form method="post" action="{% url 'panel:panel_profile_edit' %}" class="edit_profiler">
+            {% csrf_token %}
+            <div class="action_result"></div>
+
+            <div class="action_result">لطفا فیلدهای ضروری را پر کنید</div>
+            <div class="Panel_Box_title">
+                <span>اطلاعات شخص حقیقی</span>
+                <button title="ذخیره" class="Panel_Edit_icon"><i class="fa fa-floppy-o"></i></button>
+            </div>
+
+            <div>
+                <div class="Panel_UserProfile">
+                    <div>
+                        {% if profile_info.personal_image %}
+                        <img src="{{ profile_info.personal_image.url }}" width="155" height="155">
+                        {% else %}
+                            <img src="{% static 'panel/images/Panel-Profile.jpg' %}">
+                        {% endif %}
+                    </div>
+
+                    <div class="upload_profile_box">
+                      <input type="file" id="img" name="admin_img" accept="image/*" class="upload_prof">
+                      <i class="fa fa-pen upload_prof_icon"></i>
+                    </div>
+                </div>
+
+                <div class="Panel_UserInfo">
+                    <table class="table">
+                        <tbody>
+                        <tr class="tr">
+                            <td class="td">نام : <input type="text" value="{{ profile_info.first_name }}"
+                                                        name="first_name" required="" autocomplete="off"></td>
+                            <td class="td">نام خانوادگی : <input type="text" value="{{ profile_info.last_name }}"
+                                                                 name="last_name" required="" autocomplete="off"></td>
+                            <td class="td">کد ملی : <input type="text" value="{{ profile_info.username }}"
+                                                           name="national_code" autocomplete="off" readonly></td>
+
+                        </tr>
+
+                        <tr class="tr">
+                            <td class="td">
+                                جنسیت :
+                                <select name="gender" style="margin-top: 7px;">
+                                    {% for key,value in genders.items %}
+                                        <option value={{ key }}
+                                                        {% if key == profile_info.gender %}
+                                                            selected
+                                                        {% endif %}
+                                        >{{ value }}</option>
+                                    {% endfor %}
+
+                                </select>
+                            </td>
+                            <td class="td">تاریخ تولد : <input type="text" value="{{ profile_info.birth_date }}"
+                                                               name="birth_date" autocomplete="off" id="data-input_1">
+                            </td>
+                            <td class="td">موبایل : <input type="text" value="{{ profile_info.phone }}"
+                                                           name="mobile" autocomplete="off" ></td>
+                        </tr>
+
+                        <tr class="tr">
+                            <td class="td">کد پستی : <input type="text" value="{{ profile_info.postal_code }}"
+                                                            name="postal_code" autocomplete="off"></td>
+                            <td colspan="2" class="td">ایمیل : <input type="text" value="{{ profile_info.email }}"
+                                                                      autocomplete="off" name="email"></td>
+                        </tr>
+
+                        <tr class="tr">
+                            <td colspan="3" class="td">آدرس : <input type="text" value="{{ profile_info.address }}"
+                                                                     name="address" style="width:90%"
+                                                                     autocomplete="off">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="clr"></div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+
+
+{% block extrastyle1 %}
+    <script src="{% static 'js/kama_datepicker.js' %}"></script>
+    <script type="text/javascript">
+        kamaDatepicker('data-input_1', {
+            nextButtonIcon: "{% static 'panel/images/timeir_next.png' %}"
+            , previousButtonIcon: "{% static 'panel/images/timeir_prev.png' %}"
+            , forceFarsiDigits: true
+            , markToday: true
+            , markHolidays: true
+            , highlightSelectedDay: true
+            , sync: true
+        });
+
+        $(".edit_profiler").on("submit", function (event) {
+            var formData = new FormData($(this)[0]);
+            $(".action_result").hide();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+
+                        if (response["code"] == 100) {
+                            window.location = response["url"]
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        });
+
+    </script>
+{% endblock %}

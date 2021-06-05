@@ -1,0 +1,11 @@
+{% load static %}
+<div class="upload_img_box">
+    <input type="file" id="img" name="person_img" accept="image/*" class="upload_img" onchange="image_change(this)" multiple>
+    <i class="fa fa-pen upload_img_icon"></i>
+</div>
+{% if profile_info.personal_image %}
+    <img src="{{ profile_info.personal_image.url }}" width="150" height="150">
+{% else %}
+    <img src="{% static 'images/User_Icon.png' %}" width="150" height="150">
+
+{% endif %}

@@ -1,0 +1,79 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+{% endblock %}
+{% block title %}|لیست اخبار{% endblock %}
+
+{% block content %}
+
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div class="container box_shadow center_content">
+
+                <div class="cat_list">
+                    {% if cats %}
+                        {% for cat in cats %}
+                            {% if  selected_cat == cat.title %}
+                                <a href="{% url 'news:news_list'%}?cat={{cat.title}}&title={{ title_search }}" class="cat_item actives">{{cat.title}}</a>
+                            {%else%}
+                                <a href="{% url 'news:news_list'%}?cat={{cat.title}}&title={{ title_search }}" class="cat_item">{{cat.title}}</a>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="container_header">
+                    <div class="container_title"><a href="{% url 'news:news_list' %}">لیست اخبار</a></div>
+                    <div class="search_box search_news">
+
+                        <form action="{% url 'news:news_list' %}" method="get">
+                            <input type="text" name="title" value="{{ title_search }}">
+                            {% if selected_cat%}
+                                <input type="hidden" name="cat" value="{{selected_cat}}">
+                            {%endif%}
+                            <button>جستجو</button>
+                            <div class="clr"></div>
+                        </form>
+                        <div class="clr"></div>
+
+                    </div>
+                    <div class="clr"></div>
+                </div>
+
+                <div class="News_list">
+                    {% if news_lists %}
+                        {% for news in news_lists %}
+                            <div class="News_item_box">
+                                <div class="News_item box-shadow">
+                                    <a href="{% url 'news:news_detail'  news.id %}">
+                                        <div class="News_img">
+                                            <img src="{{ news.image_1.url }}" width="310" height="174">
+
+                                            <div class="News_img_hover">
+                                                <span class="LinkIcon" href=""></span>
+                                                <span class="GalleryIcon" href=""></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="News_content">
+                                            <div class="News_content_title">{{ news.title }}</div>
+                                            <div class="News_content_txt">{{ news.summery }}....</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>در حال حاضر خبری موجود نیست.</p>
+                    {% endif %}
+
+
+
+                    <div class="clr"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

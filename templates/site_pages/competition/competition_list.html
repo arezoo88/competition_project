@@ -1,0 +1,175 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+{% endblock %}
+{% block title %}|لیست مسابقات{% endblock %}
+
+{% block content %}
+
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div id="wrapper_74_Box">
+                <div class="wrapper_74 item_list">
+                    <div class="container box-shadow">
+                        <div class="container_header">
+                            <div class="container_title"><a href="{% url 'competition:competition_list' %}">مسابقات</a>
+                            </div>
+                            <div class="search_box">
+                                <form class="filters">
+                                    {% csrf_token %}
+                                    <div class="filter_item">
+                                        <select name="gender" class="gender">
+                                            <option value="">جنسیت</option>
+                                            <option value="0">آقا</option>
+                                            <option value="1">خانم</option>
+                                        </select>
+
+                                        <select name="age_period" class="age">
+                                            <option value="">رده سنی</option>
+                                            <option value="0">نونهالان</option>
+                                            <option value="1">نوجوانان</option>
+                                            <option value="2">جوانان</option>
+                                            <option value="3">بزرگسالان</option>
+                                        </select>
+                                    </div>
+                                    <div class="clr"></div>
+                                </form>
+                            </div>
+
+                            <div class="search_box"></div>
+                            <div class="clr"></div>
+                        </div>
+
+                        <div class="container_content center_content">
+                            <div>
+
+                                <div class="Loading"><img src="{% static 'images/load.gif' %}" alt="loading"/></div>
+                                <div class="item_list_result competition_list">
+                                    {% if  competition_list %}
+                                        {% for cmp in competition_list %}
+                                            <a class="item_list_list">
+                                                <div class="item_list_img"><img src="{{ cmp.poster_image.url }}" width="40" height="40"></div>
+                                                <div class="item_list_info">
+                                                    <div class="item_list_name">{{ cmp.title }}</div>
+                                                    <div class="item_list_Flag">
+                                                        <span>مهلت ثبت نام : از تاریخ {{ cmp.register_from.0 }} تا تاریخ {{ cmp.register_to.0 }}</span>
+                                                        <span>
+                                                     جنسیت : {% if cmp.genders|length > 1 %}آقا-خانم {% elif cmp.genders.0 == 0 %}آقا{% elif cmp.genders.0 == 1 %}خانم{% endif %}
+                                                </span>
+                                                    </div>
+                                                    <div style="position: absolute;left: 0;bottom: 10px;width: 100%">
+                                                        {% for age  in cmp.ages %}
+                                                            <div class="competition_btn" onclick="register(0,{{ cmp.cmp_id }},{{ age }},{{ cmp.genders }})">
+
+                                                                {% if  age == 0 %}نونهالان{% elif age == 1 %}نوجوانان{% elif age == 2 %}جوانان{% elif age == 3 %}بزرگسالان{% endif %}
+
+                                                            </div>
+
+                                                        {% endfor %}
+                                                    </div>
+
+
+                                                </div>
+
+                                                <div class="clr"></div>
+                                            </a>
+                                        {% endfor %}
+                                    {% endif %}
+
+
+                                </div>
+                            </div>
+
+                            <div class="paging"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="wrapper_26_Box">
+                <div class="wrapper_26 box-shadow item_list">
+                    <div class="side_bar"></div>
+                </div>
+            </div>
+            <div class="error"></div>
+
+
+            <div class="clr"></div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        $('.gender').change(function () {
+            $(".Loading").fadeIn();
+            $(".item_list_result").empty();
+            $.ajax(
+                {
+                    url: '{% url 'competition:filter_competition_list' %}',
+                    type: 'post',
+                    headers: {
+                        Accept: "application/json",
+
+                    },
+
+                    data: {'gender': $(this).val(), 'age': $('.age').val()},
+
+                    success: function (response) {
+                        $(".Loading").fadeOut();
+                        $(".item_list_result").empty().html(response);
+
+
+                    }
+                });
+        });
+
+        $('.age').change(function () {
+            $(".Loading").fadeIn();
+            $(".item_list_result").empty();
+            $.ajax(
+                {
+                    url: '{% url 'competition:filter_competition_list'  %}',
+                    type: 'post',
+                    headers: {
+                        Accept: "application/json",
+
+                    },
+
+                    data: {'gender': $('.gender').val(), 'age': $('.age').val()},
+
+                    success: function (response) {
+                        $(".Loading").fadeOut();
+                        $(".item_list_result").empty().html(response);
+                    }
+                });
+        });
+
+
+        function register(id, cmp_id, age, genders) {
+            $.ajax(
+                {
+                    url: '{% url 'competition:register'   %}',
+                    type: 'post',
+
+                    headers: {
+                        Accept: "application/json"
+                    },
+                    data: {
+                        'id': id,
+                        'cmp_id': cmp_id,
+                        'age': age,
+                        'gender': genders
+                    },
+                    success: function (response) {
+                        if (response['code'] == 100) {
+                            window.location = response['url']
+                        } else {
+                            $('.error').text(response['error'])
+                        }
+                    }
+                });
+        }
+
+    </script>
+{% endblock %}

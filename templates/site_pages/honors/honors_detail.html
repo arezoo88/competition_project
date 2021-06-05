@@ -1,0 +1,94 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+{% endblock %}
+{% block title %}|تالار افتخارات : {{ honors_files.0.honors_id.full_name }} {% endblock %}
+{% block content %}
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div class="container box_shadow">
+                <div class="container_header">
+                    <div class="container_title"><a href="">{{ honors_files.0.honors_id.full_name }}</a></div>
+                    <div class="search_box search_news">
+
+                    </div>
+                    <div class="clr"></div>
+                </div>
+
+                <div class="News_list" style="min-height:500px">
+
+                    {% if honors_files %}
+                        {% for honors in honors_files %}
+                            {% if honors.extension == '.jpg' or honors.extension == '.png' %}
+
+                                <div class="News_item_box">
+                                    <div class="News_item box-shadow">
+                                        <div class="News_img honor_img">
+                                            <img src="{{ honors.file.url }}" width="310" height="174" controls>
+                                        </div>
+
+                                        <div class="News_content honor_content">
+                                            <div class="News_content_title">{{ honors.title }}</div>
+                                            <a href="{{ honors.file.url }}" target="_blank"><div class="honor_link">مشاهده</div></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif honors.extension == '.ogg' or honors.extension == '.mp4' %}
+                                <div class="News_item_box">
+                                    <div class="News_item box-shadow">
+                                        <div class="News_img honor_img">
+                                            <video width="310" controls>
+                                                <source src="{{ honors.file.url }}" type="video/mp4" width="310" height="174">
+                                                <source src="{{ honors.file.url }}" type="video/ogg" width="310" height="174">
+                                                <source src="{{ honors.file.url }}" type="video/webm" width="310" height="174">
+                                            </video>
+                                        </div>
+
+                                        <div class="News_content honor_content">
+                                            <div class="News_content_title">{{ honors.title }}</div>
+                                            <a href="{{ honors.file.url }}" target="_blank"><div class="honor_link">مشاهده</div></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif  honors.extension == '.pdf' %}
+                                <div class="News_item_box">
+                                    <div class="News_item box-shadow">
+                                        <div class="News_img honor_img">
+                                            <img src="{% static 'images/pdf.jpg' %}" width="310" height="174">
+                                        </div>
+
+                                        <div class="News_content honor_content">
+                                            <div class="News_content_title">{{ honors.title }}</div>
+                                            <a href="{{ honors.file.url }}" target="_blank"><div class="honor_link">دانلود</div></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif  honors.extension == '.txt' %}
+                                <div class="News_item_box">
+                                    <div class="News_item box-shadow">
+                                        <div class="News_img honor_img"><img src="{% static 'images/pdf.jpg' %}" width="310" height="174"></div>
+
+                                        <div class="News_content honor_content">
+                                            <div class="News_content_title">{{ honors.title }}</div>
+                                            <a href="{{ honors.file.url }}" target="_blank"><div class="honor_link">دانلود</div></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="News_item_box">
+                                    <div class="News_item box-shadow">
+                                        <div class="News_img honor_img"><img src="" width="310" height="174"></div>
+                                        <a><div class="News_content honor_content"><div class="News_content_title"></div></div></a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    <div class="clr"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

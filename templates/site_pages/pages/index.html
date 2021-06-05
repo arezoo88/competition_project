@@ -1,0 +1,545 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/owl.carousel.css' %}">
+{% endblock %}
+{% block content %}
+    <div id="Slider">
+        <div class="Parallax"></div>
+    </div>
+
+    <div id="About_resize">
+        <div id="About">
+            <div id="About_title">درباره هیئت</div>
+            <div id="About_text">
+                {{ company_info.about }}
+            </div>
+        </div>
+    </div>
+
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div id="wrapper_74_Box">
+                <div class="wrapper_74">
+                    <div class="Video">
+                        <div class="Right_Content">
+                            <div class="Bold_Content">
+                                                        {% if selected_news %}
+
+                                <a href="{% url 'news:news_detail'  selected_news.id %}">
+                                    {% if selected_news == '' %}
+                                        <img src="{% static 'images/Best_news.jpg' %}" width="615" height="370px">
+
+                                    {% else %}
+                                        <img src="{{ selected_news.image_1.url }}" width="615" height="370px">
+
+                                    {% endif %}
+                                    <div class="hover_move_up">
+                                        <div class="hover_title">تاریخچه جودو</div>
+                                        <div class="hover_content">به گزارش روابط عمومی فدراسیون جودو و کوراش، ورزش «جودو» یکی از ورزشهای قدیمی در کشور ژاپن و بنیانگذار آن استاد "جیگارو کانو" است. واژه "جودو" از ترکیب دو کلمه "جو" به معنای ملایمت ، و واژه "دو" به معنی اصل و یا روش است. لغت"جو" از ورزش «جوجیتسو» مشتق شده که توسط سامورایی ها مورد استفاده قرار می گرفت...</div>
+                                    </div>
+                                </a>
+                            {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="Left_Content">
+                            <div class="aparat_Video">
+                                <div id="14337676808">
+                                    <script type="text/JavaScript" src="https://www.aparat.com/embed/S9fnP?data[rnddiv]=14337676808&data[responsive]=yes"></script>
+                                </div>
+
+                                <!-- <div class="hover_move_up">
+                                    <div class="center_horizental"><a href="">مشاهده در سایز اصلی</a></div>
+                                </div> -->
+                            </div>
+
+                            <div class="aparat_Video">
+                                <div id="60744071903" class="aparat_Video">
+                                    <script type="text/JavaScript" src="https://www.aparat.com/embed/ejuOr?data[rnddiv]=60744071903&data[responsive]=yes"></script>
+                                </div>
+
+                                <!-- <div class="hover_move_up">
+                                    <div class="center_horizental"><a href="">مشاهده در سایز اصلی</a></div>
+                                </div> -->
+                            </div>
+                        </div>
+                        <div class="clr"></div>
+                    </div>
+
+                    <div class="News" style="position:relative">
+                        <div id="owl-news" class="owl-carousel">
+                            {% if news_list %}
+                                {% for news in news_list %}
+                                    <div class="News_item item box-shadow">
+                                        <a href="{% url 'news:news_detail'  news.id %}">
+                                            <div class="News_img">
+                                                <img src="{{ news.image_1.url }}" width="310" height="174">
+
+                                                <div class="News_img_hover">
+                                                    <span class="LinkIcon"></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="News_content">
+                                                <div class="News_content_title">{{ news.title }}</div>
+                                                <div class="News_content_txt">{{ news.summery }}...</div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>اخبار</p>
+                            {% endif %}
+
+
+                        </div>
+                    </div>
+
+                    <div class="Gallery">
+                        <div class="gallery_item_box">
+                            <div class="gallery_item right box-shadow">
+                                <div class="gallery_title"><a href="{% url 'competition:gallery_list' %}">تصاویر</a></div>
+
+                                <div class="gallery_img">
+                                    {% if gallery_list %}
+                                        {% for pic in gallery_list %}
+                                            <a href="http://alborz-judo.ir/competition/gallery#prettyPhoto">
+                                                <div class="gallery">
+                                                    <img src="{{ pic.small_img.url }}" width="130" height="130">
+                                                    <div class="hover_shadow">مشاهده</div>
+                                                </div>
+                                            </a>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p style="text-align: center;line-height: 180px">گالری عکس</p>
+                                    {% endif %}
+
+
+                                    <div class="clr"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gallery_item_box">
+                            <div class="gallery_item left box-shadow">
+                                <div class="gallery_title"><a href="{% url 'pages:honors_list' %}">تالار افتخارات</a></div>
+
+                                <div class="gallery_img" style="direction:ltr">
+                                    <div class="owl-carousel" id="champions_league">
+
+                                        {% if honors_list %}
+
+                                            <div class="champions" class="item">
+                                                <div class="champions_head" style="min-height:45px">
+                                                    <!-- <p>مسابقات انتخابی المپیک</p> -->
+                                                </div>
+
+                                                <div class="champions_img_box">
+                                                    {% for honors in honors_list %}
+                                                        {% if forloop.counter < 4 %}
+                                                            <div class="champions_img">
+                                                                <img src="{{ honors.image.url }}" width="130" height="130">
+                                                                <p>
+                                                                    {% for key,value in grades.items %}
+                                                                        {% if key == honors.grade %}
+                                                                            {{ value }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </p>
+                                                                <p>{{ honors.full_name }}</p>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    <div class="clr"></div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+
+                                        {% if honors_list %}
+                                            {% if honors_list.3 %}
+                                                <div class="champions" class="item">
+                                                    <div class="champions_head">
+{#                                                        <p>مسابقات انتخابی المپیک</p>#}
+                                                    </div>
+                                                    <div class="champions_img_box">
+
+                                                        {% for honors in honors_list %}
+                                                            {% if forloop.counter > 3 %}
+                                                                <div class="champions_img">
+                                                                    <img src="{{ honors.image.url }}" width="130" height="130">
+                                                                    <p>
+                                                                        {% for key,value in grades.items %}
+                                                                            {% if key == honors.grade %}
+                                                                                {{ value }}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </p>
+                                                                    <p>{{ honors.full_name }}</p>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+
+
+
+
+                                                        <div class="clr"></div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+
+
+                                        {% if honors_list %}
+                                            {% if honors_list.6 %}
+                                                <div class="champions" class="item">
+                                                    <div class="champions_head">
+{#                                                        <p>مسابقات انتخابی المپیک</p>#}
+                                                    </div>
+                                                    <div class="champions_img_box">
+
+                                                        {% for honors in honors_list %}
+                                                            {% if forloop.counter > 6 %}
+                                                                <div class="champions_img">
+                                                                    <img src="{{ honors.image.url }}" width="130" height="130">
+                                                                    <p>
+                                                                        {% for key,value in grades.items %}
+                                                                            {% if key == honors.grade %}
+                                                                                {{ value }}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </p>
+                                                                    <p>{{ honors.full_name }}</p>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+
+
+
+
+                                                        <div class="clr"></div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="clr"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wrapper_26_Box">
+                {#                <div class="wrapper_26 box-shadow item_list" style="min-height:476px">#}
+                {#                    <div class="Tab_Caption wrapper_Caption"><a href="">رتبه بندی استانی</a></div>#}
+                {#                    <div class="Tab_Section">#}
+                {#                        <a class="Tab_Title" onclick="item_list_filter(event, '1')" id="defaultOpen">آقایان</a>#}
+                {#                        <a class="Tab_Title" onclick="item_list_filter(event, '2')">خانم ها</a>#}
+                {#                    </div>#}
+                {##}
+                {#                    <div id="1" class="Tab_Content" data-open="0">#}
+                {#                        <div class="Loading index_loading"><img src="{% static 'images/load.gif' %}" alt="loading" width="40" height="40"/></div>#}
+                {#                        <div class="item_list_result">#}
+                {##}
+                {#                            {% for user_rank in users_ranks_in_cmp %}#}
+                {#                                <a href="" class="item_list_list">#}
+                {#                                    <div class="item_list_img"><img src="images/18436.jpg" width="40" height="40"></div>#}
+                {#                                    <div class="item_list_info">#}
+                {#                                        <div class="item_list_name">{{ user_rank.firstname }} {{ user_rank.lastname }}</div>#}
+                {#                                        <div class="item_list_Flag">#}
+                {#                                            <img src="images/Ranking_Flag.jpg" width="20" height="15"> ایران#}
+                {#                                        </div>#}
+                {#                                    </div>#}
+                {#                                    <div class="item_list_Category">{{ user_rank.sum }}</div>#}
+                {##}
+                {#                                    <div class="clr"></div>#}
+                {#                                </a>#}
+                {#                            {% endfor %}#}
+                {##}
+                {##}
+                {#                        </div>#}
+                {#                    </div>#}
+                {##}
+                {#                    <div id="2" class="Tab_Content" data-open="0">#}
+                {#                        <div class="Loading index_loading"><img src="images/load.gif" alt="loading" width="40" height="40"/></div>#}
+                {#                        <div class="item_list_result">show result</div>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {##}
+                {#                <div class="wrapper_26 box-shadow item_list">#}
+                {#                    <div class="wrapper_Caption"><a href="">مسابقه ها</a></div>#}
+                {#                    <div class="wrapper_Content">#}
+                {#                        <a href="" class="item_list_list">#}
+                {#                            <div class="item_list_img"><img src="images/User_Icon.png" width="40" height="40"></div>#}
+                {#                            <div class="item_list_info">#}
+                {#                                <div class="item_list_name">مسابقه نوجوانان</div>#}
+                {#                                <div class="item_list_Flag">مهلت ثبت نام : 1398-03-15</div>#}
+                {#                            </div>#}
+                {##}
+                {#                            <div class="clr"></div>#}
+                {#                        </a>#}
+                {#                    </div>#}
+                {#                </div>#}
+
+
+                <div class="wrapper_26 box-shadow item_list" style="min-height:476px">
+                    <div class="Tab_Caption wrapper_Caption"><a href="">رتبه بندی استانی</a></div>
+                    <div class="Tab_Section">
+                        <a class="Tab_Title" onclick="item_list_filter(event, '1')" id="defaultOpen">آقایان</a>
+                        <a class="Tab_Title" onclick="item_list_filter(event, '2')">خانم ها</a>
+                    </div>
+
+                    <div id="1" class="Tab_Content" data-open="0">
+                        <div class="Loading index_loading"><img src="images/load.gif" alt="loading" width="40" height="40"/></div>
+                        <div class="item_list_result">
+
+                            <a href="" class="item_list_list">
+                                <div class="item_list_img"><img src="images/18436.jpg" width="40" height="40"></div>
+                                <div class="item_list_info">
+                                    <div class="item_list_name">علی سعیدی</div>
+                                    <div class="item_list_Flag">
+                                        <img src="images/Ranking_Flag.jpg" width="20" height="15"> ایران
+                                    </div>
+                                </div>
+                                <div class="item_list_Category">-60</div>
+
+                                <div class="clr"></div>
+                            </a>
+
+                            <a href="" class="item_list_list">
+                                <div class="item_list_img"><img src="images/17805.jpg" width="40" height="40"></div>
+                                <div class="item_list_info">
+                                    <div class="item_list_name">رضا پارسا</div>
+                                    <div class="item_list_Flag">
+                                        <img src="images/Ranking_Flag.jpg" width="20" height="15"> ایران
+                                    </div>
+                                </div>
+                                <div class="item_list_Category">-70</div>
+
+                                <div class="clr"></div>
+                            </a>
+
+                            <a href="" class="item_list_list">
+                                <div class="item_list_img"><img src="images/User_Icon.png" width="40" height="40"></div>
+                                <div class="item_list_info">
+                                    <div class="item_list_name">حسین احدی</div>
+                                    <div class="item_list_Flag">
+                                        <img src="images/Ranking_Flag.jpg" width="20" height="15"> ایران
+                                    </div>
+                                </div>
+                                <div class="item_list_Category">-66</div>
+
+                                <div class="clr"></div>
+                            </a>
+
+                            <a href="" class="item_list_list">
+                                <div class="item_list_img"><img src="images/18436.jpg" width="40" height="40"></div>
+                                <div class="item_list_info">
+                                    <div class="item_list_name">امیر بهادری</div>
+                                    <div class="item_list_Flag">
+                                        <img src="images/Ranking_Flag.jpg" width="20" height="15"> ایران
+                                    </div>
+                                </div>
+                                <div class="item_list_Category">-75</div>
+
+                                <div class="clr"></div>
+                            </a>
+
+                            <a href="" class="item_list_list">
+                                <div class="item_list_img"><img src="images/19675.jpg" width="40" height="40"></div>
+                                <div class="item_list_info">
+                                    <div class="item_list_name">سعید موسوی</div>
+                                    <div class="item_list_Flag">
+                                        <img src="images/Ranking_Flag.jpg" width="20" height="15"> ایران
+                                    </div>
+                                </div>
+                                <div class="item_list_Category">-90</div>
+
+                                <div class="clr"></div>
+                            </a>
+
+                            <a href="" class="item_list_list">
+                                <div class="item_list_img"><img src="images/17805.jpg" width="40" height="40"></div>
+                                <div class="item_list_info">
+                                    <div class="item_list_name">پیمان عبدی</div>
+                                    <div class="item_list_Flag">
+                                        <img src="images/Ranking_Flag.jpg" width="20" height="15"> ایران
+                                    </div>
+                                </div>
+                                <div class="item_list_Category">-63</div>
+
+                                <div class="clr"></div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div id="2" class="Tab_Content" data-open="0">
+                        <div class="Loading index_loading"><img src="images/load.gif" alt="loading" width="40" height="40"/></div>
+                        <div class="item_list_result">show result</div>
+                    </div>
+                </div>
+
+                <div class="wrapper_26 box-shadow item_list">
+                    <div class="wrapper_Caption"><a href="">مسابقه ها</a></div>
+                    <div class="wrapper_Content">
+                        <a href="" class="item_list_list">
+                            <div class="item_list_img"><img src="images/User_Icon.png" width="40" height="40"></div>
+                            <div class="item_list_info">
+                                <div class="item_list_name">مسابقه نوجوانان</div>
+                                <div class="item_list_Flag">مهلت ثبت نام : 1398-03-15</div>
+                            </div>
+
+                            <div class="clr"></div>
+                        </a>
+                    </div>
+
+                    <div class="wrapper_Content">
+                        <a href="" class="item_list_list">
+                            <div class="item_list_img"><img src="images/User_Icon.png" width="40" height="40"></div>
+                            <div class="item_list_info">
+                                <div class="item_list_name">مسابقه نوجوانان</div>
+                                <div class="item_list_Flag">مهلت ثبت نام : 1398-03-15</div>
+                            </div>
+
+                            <div class="clr"></div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="wrapper_26 box-shadow item_list">
+                    <div class="wrapper_Caption"><a>نظر سنجی</a></div>
+                    <div class="wrapper_Content">
+
+
+                        <div>{{ question }}</div>
+
+                        <div class="Survey_loading"><img src="{% static 'images/load.gif' %}" alt="loading" width="40" heigh="40"/></div>
+                        <form method="post" class="Survey_Form">
+                            {% csrf_token %}
+                            {% if choices_question %}
+                                {% for choice in choices_question %}
+                                    <div class="progressbar_item">
+                                        <input id="radio_{{ forloop.counter }}" {% if user.is_authenticated %}{% if user_choice_selected.choice_id == choice.choice_id %}checked{% endif %}{% endif %} type="radio" name="Survey" onchange="Survey_result('{% url 'polls:vote' %}',{{ choice.choice_id }})">
+                                        <label for="radio_{{ forloop.counter }}">{{ choice.choice_text }}</label>
+
+                                        <div class="w3-light-grey">
+                                            <div class="w3-container w3-blue" style="width:{{ 100|mul:choice.comment | div:comment_count  |floatformat }}%">{{ 100|mul:choice.comment | div:comment_count  |floatformat }}%</div>
+                                        </div>
+
+
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clr"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrastyle1 %}
+    <script type="text/javascript" src="{% static 'js/owl.carousel.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            {% if company_info.banner_img != ''  %}
+                $('.Parallax').css('background', 'url(' + "{{ company_info.banner_img.url }}" + ')');
+                $('.Parallax').css('background-position', 'center');
+                $('.Parallax').css('background-repeat', 'no-repeat');
+                $('.Parallax').css('background-attachment', 'fixed');
+                $('.Parallax').css('background-size', 'cover');
+                $('.Parallax').css('min-height', '800px');
+            {% endif %}
+
+
+        });
+
+        function item_list_filter(evt, id) {
+            var i, TabContent, TabSectionTitle;
+
+            TabContent = document.getElementsByClassName("Tab_Content");
+            TabSectionTitle = document.getElementsByClassName("Tab_Title");
+
+            for (i = 0; i < TabContent.length; i++) {
+                TabContent[i].style.display = "none";
+            }
+            for (i = 0; i < TabSectionTitle.length; i++) {
+                TabSectionTitle[i].className = TabSectionTitle[i].className.replace("actives", "");
+            }
+            document.getElementById(id).style.display = "block";
+            evt.currentTarget.className += " actives";
+
+            if ($("#" + id).attr("data-open") == 0) {
+                $(".Loading").fadeIn()
+                {#$.ajax(#}
+                {#    {#}
+                {#        url: "{% url 'pages:filter_gender' %}",#}
+                {#        type: "post",#}
+                {#        data: {#}
+                {#            id: id,#}
+                {#        },#}
+                {#        headers: {#}
+                {#            Accept: "application/json"#}
+                {#        },#}
+                {#        success: function (response) {#}
+                {#            $(".Loading").fadeOut();#}
+                {#            $("#2").empty().html(response)#}
+                {#        }#}
+                {#    });#}
+
+                $("#" + id).attr("data-open", "1")
+            }
+        }
+
+        document.getElementById("defaultOpen").click();
+
+        $(document).ready(function () {
+            $("#owl-news").owlCarousel(
+                {
+                    autoPlay: 3000,
+                    navigation: false,
+                    items: 3,
+                    itemsCustom: [[0, 1], [660, 2], [1111, 4], [1300, 3]],
+                    navigationText: ["", ""]
+                });
+
+            $("#champions_league").owlCarousel(
+                {
+                    autoPlay: 2000,
+                    navigation: false,
+                    items: 1,
+                    itemsCustom: [[0, 1]],
+                    navigationText: ["", ""]
+                });
+        });
+
+
+        function Survey_result(href, code) {
+            $(".Survey_loading").fadeIn();
+            event.preventDefault();
+            $.ajax(
+                {
+                    url: href,
+                    type: 'post',
+                    data: {
+                        id: code,
+                    },
+
+                    success: function (response) {
+                        $(".Survey_loading").fadeOut()
+                        $('.Survey_Form').empty().html(response);
+                    }
+                });
+        }
+    </script>
+{% endblock %}

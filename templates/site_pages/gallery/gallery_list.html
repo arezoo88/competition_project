@@ -1,0 +1,64 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+{% endblock %}
+{% block title %}|گالری{% endblock %}
+{% block content %}
+    <div id="Wrapper_resize" class="direction">
+        <div id="Wrapper">
+            <div id="wrapper_74_Box">
+                <div class="wrapper_74 ">
+                    <div class="container box_shadow">
+                        <div class="container_header">
+                            <div class="container_title"><a href="">لیست تصاویر</a></div>
+                            <div class="search_box"></div>
+                            <div class="clr"></div>
+                        </div>
+                        <div class="Gallery_Box center_content justify">
+
+                            <ul class="gallery_clearfix clearfix">
+                                {% if gallery %}
+                                    {% for pic in gallery %}
+                                        <li>
+                                            <a href="{{ pic.big_img.url }}" rel="prettyPhoto[gallery1]" title="{{ pic.description }}" class="brightness">
+                                                <img src="{{ pic.small_img.url }}" width="130" height="130" alt="{{ pic.title }}"/>
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <p style="text-align: right;direction: rtl">عکس وجود ندارد.</p>
+                                {% endif %}
+
+
+                                <div class="clr"></div>
+                            </ul>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="wrapper_26_Box">
+                <div class="wrapper_26 box-shadow item_list">
+                    <div class="side_bar"></div>
+                </div>
+            </div>
+
+            <div class="clr"></div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript" src="{% static 'js/gallery.js' %}"></script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("a[rel^='prettyPhoto']").prettyPhoto();
+        });
+    </script>
+
+{% endblock %}

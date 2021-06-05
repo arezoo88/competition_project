@@ -1,0 +1,44 @@
+{% load static %}
+<div id="Footer_resize">
+    <div id="Footer">
+        <div class="Footer_cat">
+            <div class="footer_70">
+                <div class="footer_33">
+                    <a href="{% url 'pages:index' %}">صفحه اصلی</a>
+                    <a>مسابقات</a>
+                    <a>رتبه بندی استانی</a>
+                    <a href="{% url 'pages:about' %}">درباره هیئت</a>
+                    <a href="{% url 'pages:contact' %}">تماس با هیئت</a>
+                </div>
+                <div class="footer_33">
+                    {% for cat in cat_news %}
+                            <a class="footer_search" href="{% url 'news:news_list' %}?cat={{ cat.title }}"> {{ cat.title }}</a>
+                        {% if forloop.counter|divisibleby:5 %}
+                            </div>
+                            <div class="footer_33">
+                        {% endif %}
+
+                    {% endfor %}
+                    </div>
+
+                <div class="clr"></div>
+
+
+            </div>
+
+            <div class="clr"></div>
+        </div>
+
+        <div>{{ info.address |safe }}</div>
+        <div class="footer_logo">
+            <img src="{% static 'images/logo.aspx.png' %}" width="150" height="150" alt="نشانن ملی ثبت">
+            <img src="{% static 'images/elogo.aspx.png' %}" width="125" height="136" alt="نماد اعتماد الکترونیکی">
+        </div>
+    </div>
+</div><!-- end Footer_resize -->
+
+
+
+
+
+

@@ -1,0 +1,106 @@
+{% extends 'admin_panel_pages/master.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'panel/css/panel-masterMe.css' %}">
+{% endblock %}
+{% block title %}| ویرایش عکس  {% endblock %}
+{% block content %}
+    <div class="Panel_Box">
+        <form method="post" action="{% url 'panel:panel_gallery_edit'  image_selected.id %}" class="form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="action_result"></div>
+            <div class="Panel_Box_title">
+                <span class="title"><a href="">ویرایش تصویر</a></span>
+                <button href="" title="ذخیره" class="Panel_Edit_icon">
+                    <i class="fa fa-floppy-o"></i>
+                </button>
+            </div>
+
+            <div class="Panel_item_show">
+                <div class="item_builder">
+                    <span class="title">عنوان تصویر</span>
+                    <input type="text" name="title" value="{{ image_selected.title }}" required>
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">تصویر کوچک</span>
+                    <input type="file" id="img" name="small_img" accept="image/*">
+
+                    <div class="item_help">
+                        <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                        <a title="سایز تصویر : 310 * 130"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                    </div>
+
+                    <div class="item_hide_box">
+                        <div class="item_hide small_Gallery">
+                            <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                            <img src="{{ image_selected.small_img.url }}" width="130" height="130">
+                        </div>
+                    </div>
+
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">تصویر بزرگ</span>
+                    <input type="file" id="img" name="big_img" accept="image/*">
+
+                    <div class="item_help">
+                        <a title="مشاهده تصویر" onclick="show_item_hide(this)"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                        <a title="سایز تصویر : 725 * 370"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                    </div>
+
+                    <div class="item_hide_box">
+                        <div class="item_hide big_Gallery">
+                            <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                            <img src="{{ image_selected.big_img.url }}" width="725" height="370">
+                        </div>
+                    </div>
+
+                    <div class="clr"></div>
+                </div>
+
+                <div class="item_builder">
+                    <span class="title">توضیحات تصویر</span>
+                    <textarea name="text" cols="50" rows="10" required>{{ image_selected.description }}</textarea>
+                    <div class="clr"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+
+
+{% block extrastyle1 %}
+    <script type="text/javascript">
+        $(".form").on("submit", function (event) {
+            var formData = new FormData($(this)[0]);
+            $(".action_result").hide();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: formData,
+
+                    success: function (response) {
+                        if (response["code"] == 100) {
+                            window.location = response["url"]
+                        } else {
+                            $('.action_result').empty().text(response["error"]);
+                            $(".action_result").show();
+                        }
+                    }
+                });
+        });
+    </script>
+{% endblock %}

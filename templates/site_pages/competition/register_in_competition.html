@@ -1,0 +1,182 @@
+{% extends 'site_pages/base.html' %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/other.css' %}">
+{% endblock %}
+{% block title %}|ثبت نام در مسابقه{% endblock %}
+
+{% block content %}
+<div class="action_result"></div>
+  <div id="Wrapper_resize" class="direction">
+            <div id="Wrapper">
+                <div class="container box_shadow">
+                    <div class="container_header">
+                        <div class="container_title"><a>{{ cmp_info.0.title }}</a></div>
+                        <div class="search_box"></div>
+                        <div class="clr"></div>
+                    </div>
+
+                    <div class="container_content" style="position:relative">
+                        <form action="{% url 'competition:final_register' %}" method="post" class="register_in_cmp">
+
+                            <div class="attached_file">
+                                <a title="عکس پوستر" onclick="show_item_hide(this)"><img src="" width="400" height="400"></a>
+                                <a title="عکس بخشنامه" onclick="show_item_hide(this)"><img src="" width="400" height="400"></a>
+
+                                <div class="item_hide_box">
+                                  <div class="item_hide">
+                                    <div class="item_hide_close" onclick="item_hide_close(this)"><i class="fa-times fa"></i></div>
+                                    <div class="item_hide_img"></div>
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="user_input box_40">
+                                <p>نام</p>
+                                <input type="text" value="{{ profile_info.user.first_name }}" readonly required class="readonly">
+                            </div>
+
+                            <div class="user_input box_40">
+                                <p>نام خانوادگی</p>
+                                <input type="text" value="{{ profile_info.user.last_name }}" readonly required class="readonly">
+                            </div>
+
+                            <div class="user_input box_40">
+                                <p>شماره موبایل</p>
+                                <input type="text" value="{{ profile_info.user.username }}" readonly required class="readonly">
+                            </div>
+
+                            <div class="user_input box_40">
+                                <p>تاریخ تولد</p>
+                                <input type="text" value="{{ profile_info.birth_date }}" readonly required class="readonly"  id="data-input">
+                            </div>
+
+                            <div class="user_input box_40">
+                                <p>کد ملی</p>
+                                <input type="text" value="{{ profile_info.national_code }}" readonly required class="readonly">
+                            </div>
+
+                            <div class="user_input box_40">
+                                <p>جنسیت</p>
+                                <select readonly name="gender" required class="readonly">
+                                    <option value="{{ profile_info.gender }}">{% if profile_info.gender == 0 %}آقا{% else %}خانم{% endif %}</option>
+                                </select>
+                            </div>
+
+                            <div class="user_input box_40">
+                                <p>عکس : سایز تصویر (200 * 200)</p>
+                                <input type="file" id="img" name="user_img" accept="image/*">
+                            </div>
+
+                            <div class="user_input box_40">
+                                <p>رده سنی</p>
+                                <select name="user_age_cat" required>
+                                        {% for key,value in age_period.items %}
+                                            {% for age in cmp_info.0.ages %}
+                                                {% if age == key %}
+                                                    <option value="{{ key }}_{{cmp_info.0.user_from_birtday.0  }}_{{ cmp_info.0.user_to_birthday.0 }}">{{ value }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+
+                                </select>
+                            </div>
+                                <input type="hidden" name="cmp" value="{{ cmp_info.0.cmp_id }}">
+
+                            <div class="user_input box_40">
+                                <p>رده وزنی</p>
+                                <select name="user_weight_cat" required>
+
+                                    {% if weight_classification %}
+                                        {% for weight in weight_classification %}
+                                            {% for w in cmp_info.0.weight_id %}
+                                                {% if w == weight.id %}
+                                                    <option value="{{ weight.id }}">{{ weight.title  }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                    {% endif %}
+
+                                </select>
+                            </div>
+
+                            <div class="user_input box_40">
+                                <button class="button">
+                                    <i class="fa fa-arrow-alt-square-right"></i>
+                                    ثبت نام
+                                </button>
+
+                                <a class="button" href="{% url 'account:dashboard' %}">
+                                	<i class="fa fa-pen" aria-hidden="true"></i>
+                                	ویرایش اطلاعات
+                                </a>
+
+                                <div class="attach_file">
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+{% endblock %}
+{% block extrastyle1 %}
+    <script type="text/javascript">
+
+    $(".register_in_cmp").on("submit", function(event)
+    {
+            var formData = new FormData($(this)[0]);
+            $(".action_result").hide();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+            {
+                processData: false,
+                contentType: false,
+                url:  $(".register_in_cmp").attr("action"),
+                type: $(".register_in_cmp").attr("method"),
+               headers:{
+                      Accept: "application/json"
+                    },
+                data: formData,
+
+                success: function(response)
+                {
+
+                    response_form = response;
+
+                    if (response_form["code"] == 100)
+                    {
+                        window.location = response_form["result"]
+                    }
+                    else
+                    {
+                        $('.action_result').empty().text(response_form["error"]);
+                        $(".action_result").show();
+                    }
+                }
+            });
+        });
+
+
+
+
+
+
+
+            function show_item_hide (x)
+            {
+                $(x).closest(".attached_file").find(".item_hide_img").empty().html($(x).html())
+                $(x).closest(".attached_file").find(".item_hide_box").fadeIn()
+            }
+
+            function item_hide_close (x)
+            {
+                $(x).closest(".attached_file").find(".item_hide_box").fadeOut()
+            }
+        </script>
+
+{% endblock %}

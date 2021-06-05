@@ -1,0 +1,37 @@
+<td>
+
+<select required  name="cat_age_input_user" class="cat_name_input">
+{% if ages_list %}
+    {% for age in ages_list %}
+        {% for key,value in ages_period.items %}
+            {% if key == age %}
+                <option value="{{ key }}"
+                {% if age_selected == age %}
+                    selected
+                {% endif %}
+                >{{ value }}</option>
+            {% endif %}
+
+        {% endfor %}
+    {% endfor %}
+{% endif %}
+</select>
+</td>
+
+<td>
+
+    <select class="cat_age_input" name="cat_weight_input_user" required>
+
+        {% if weights_period %}
+            {% for weight in weights_period %}
+                <option value="{{ weight.weight__id }}" {% if  weight.weight__id == weight_selected %}selected{% endif %}>{{ weight.weight__title }}</option>
+            {% endfor %}
+        {% endif %}
+
+    </select>
+</td>
+
+
+
+
+

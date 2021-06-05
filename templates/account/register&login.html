@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فدراسیون جودو استان البرز | ثبت نام ورود</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+<div id="Wrapper_resize" class="Fixed direction">
+    <div id="Wrapper">
+        <div class="user_box">
+            <div class="user box-shadow" id="login">
+                <form action="{% url 'account:login' %}" method="post" class="login_form">
+                    {% csrf_token %}
+                    <div class="user_head">ورود به سایت</div>
+                    <div class="user_input_box">
+                        <div class="user_input">
+                            <p>کد ملی</p>
+                            <input type="text" name="nationalcode" placeholder="کد ملی خود را وارد نمایید" required>
+                        </div>
+
+                        <div class="user_input">
+                            <p>رمز عبور</p>
+                            <input type="password" name="password" placeholder="رمز عبور خود را وارد نمایید" required>
+                        </div>
+
+                        <div class="user_input">
+                            <button class="button">
+                                <i class="fa fa-arrow-alt-square-right"></i>
+                                ورود به سایت
+                            </button>
+                        </div>
+
+                        <div class="Loading user_loading"><img src="{% static 'images/load.gif' %}" alt="loading" width="90" height="90"/></div>
+                        <div class="result"></div>
+                    </div>
+
+                    <div class="user_help">
+                        <a href="{% url 'account:forget_password' %}" id="forget_password">رمز عبور خود را فراموش کرده
+                            ام</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="user_box">
+            <div class="user box-shadow" id="register">
+                <form action="{% url 'account:register' %}" method="post" class="register_form">
+                    {% csrf_token %}
+                    <div class="user_head">ثبت نام در سایت</div>
+                    <div class="user_input_box">
+
+                        <div class="user_input">
+                            <p>کدملی</p>
+                            <input type="text" name="nationalcode" placeholder=" کد ملی  خود را وارد نمایید" required>
+                        </div>
+
+                        <div class="user_input">
+                            <p>شماره موبایل</p>
+                            <input type="text" name="mobile" placeholder="شماره موبایل خود را وارد نمایید" required>
+                        </div>
+
+                        <div class="user_input">
+                            <p>رمز عبور</p>
+                            <input type="password" name="password" placeholder="رمز عبور خود را وارد نمایید" required>
+                        </div>
+
+                        <div class="user_input" style="direction:rtl;position:relative;margin-bottom: 6px;">
+                            <input for="f_Judo"  name="f_Judo" type="checkbox"  ><label id="f_Judo">جودو</label>
+                            <br>
+                            <input for="f_Self_Defense" name="f_Self_Defense" type="checkbox"  ><label id="f_Self_Defense">دفاع شخصی</label>
+                        </div>
+
+                        <div class="user_input">
+                            <button class="button">
+                                <i class="fa fa-user-plus"></i>
+                                ثبت نام در سایت
+                            </button>
+                        </div>
+
+                        <div class="Loading user_loading"><img src="{% static 'images/load.gif' %}" alt="loading" width="90" height="90"/></div>
+                        <div class="result_register"></div>
+                    </div>
+
+                    <div class="user_help">
+                        ثبت نام با کد ملی و شماره تلفن همراه امکان پذیر است.
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="clr"></div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
+<script type="text/javascript">
+
+    $(function () {
+        $(".register_form").on("submit", function (event)
+        {
+            $(".result_register").empty();
+
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            var number_Of_Checked = $("input:checkbox:checked").length
+
+            if (number_Of_Checked)
+            {
+                $(this).find(".Loading").fadeIn();
+
+                $.ajax(
+                {
+
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    headers: {
+                        Accept: "application/json",
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: $(this).serialize(),
+
+                    success: function (response) {
+                        $(".Loading").fadeOut();
+                        if (response["code"] == 1) {
+                            window.location = response["url"]
+                        } else {
+                            $('.result_register').empty().html('<div class="result_error">' + response["result"] + '</div>');
+                        }
+                    }
+                });
+            }
+            else
+                $('.result_register').empty().html('<div class="result_error">لطفا یکی از گرایش ها را انتخاب کنید</div>');
+        });
+
+        $(".login_form").on("submit", function (event) {
+
+            $(".result").empty();
+            $(this).find(".Loading").fadeIn();
+            event.preventDefault();
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax(
+            {
+
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                data: $(this).serialize(),
+
+                success: function (response) {
+                    $(".Loading").fadeOut();
+
+                    if (response["code"] == 1) {
+                        $('.result').empty().html('<div class="result_success">' + response["result"] + '</div>');
+                        window.location = response["url"]
+                    } else {
+                        $('.result').empty().html('<div class="result_error">' + response["result"] + '</div>');
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
